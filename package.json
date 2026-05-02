@@ -1,0 +1,112 @@
+{
+  "name": "@tmrp/env",
+  "version": "0.1.0-alpha.0",
+  "description": "Type-safe environment variable parsing, powered by Zod.",
+  "keywords": [
+    "env",
+    "environment",
+    "typescript",
+    "validation",
+    "zod"
+  ],
+  "homepage": "https://github.com/tmrp/env#readme",
+  "bugs": {
+    "url": "https://github.com/tmrp/env/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tmrp/env.git"
+  },
+  "license": "MIT",
+  "author": "Timothy Peterson",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/runtime/browser/create-browser-env.d.ts",
+      "default": "./dist/runtime/browser/create-browser-env.js"
+    },
+    "./bun": {
+      "types": "./dist/runtime/bun/create-bun-env.d.ts",
+      "default": "./dist/runtime/bun/create-bun-env.js"
+    },
+    "./cloudflare": {
+      "types": "./dist/runtime/cloudflare/create-cloudflare-env.d.ts",
+      "default": "./dist/runtime/cloudflare/create-cloudflare-env.js"
+    },
+    "./deno": {
+      "types": "./dist/runtime/deno/create-deno-env.d.ts",
+      "default": "./dist/runtime/deno/create-deno-env.js"
+    },
+    "./import-meta": {
+      "types": "./dist/runtime/import-meta/create-import-meta-env.d.ts",
+      "default": "./dist/runtime/import-meta/create-import-meta-env.js"
+    },
+    "./netlify": {
+      "types": "./dist/runtime/netlify/create-netlify-env.d.ts",
+      "default": "./dist/runtime/netlify/create-netlify-env.js"
+    },
+    "./node": {
+      "types": "./dist/runtime/node/create-node-env.d.ts",
+      "default": "./dist/runtime/node/create-node-env.js"
+    },
+    "./record": {
+      "types": "./dist/runtime/record/create-record-env.d.ts",
+      "default": "./dist/runtime/record/create-record-env.js"
+    },
+    "./vercel-edge": {
+      "types": "./dist/runtime/vercel/create-vercel-edge-env.d.ts",
+      "default": "./dist/runtime/vercel/create-vercel-edge-env.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "package.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rm -rf dist",
+    "format": "prettier --write .",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:runtime": "pnpm test:runtime:node && pnpm test:runtime:bun && pnpm test:runtime:deno",
+    "test:runtime:bun": "bun run scripts/runtime-smoke/bun.mjs",
+    "test:runtime:deno": "deno run --no-lock --allow-env --node-modules-dir=auto scripts/runtime-smoke/deno.mjs",
+    "test:runtime:node": "node scripts/runtime-smoke/node.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "effect": "^3.21.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tsconfig/recommended": "^1.0.13",
+    "@types/node": "^25.6.0",
+    "@vitest/coverage-v8": "^4.1.5",
+    "dotenv": "^17.4.2",
+    "eslint": "^10.3.0",
+    "eslint-plugin-perfectionist": "^5.9.0",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.3",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.1",
+    "vitest": "^4.1.5",
+    "zod": "^4.4.2"
+  },
+  "peerDependencies": {
+    "zod": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=24.15.0"
+  }
+}
