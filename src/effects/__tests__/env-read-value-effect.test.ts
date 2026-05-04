@@ -12,4 +12,12 @@ describe("envReadValueEffect", () => {
       Effect.runSync(envReadValueEffect("NAME", () => undefined))
     ).toThrow('Environment variable "NAME" is not defined');
   });
+
+  it("allows missing values when validation is skipped", () => {
+    expect(
+      Effect.runSync(
+        envReadValueEffect("NAME", () => undefined, { skipValidation: true })
+      )
+    ).toBeUndefined();
+  });
 });

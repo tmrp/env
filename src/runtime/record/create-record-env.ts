@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 
-import type { Env, EnvKeys, EnvRecord } from "../../lib/types.js";
+import type { Env, EnvKeys, EnvRecord, Options } from "../../lib/types.js";
 
 import { envParseValueEffect } from "../../effects/env-parse-value-effect.js";
 import { envReadValueEffect } from "../../effects/env-read-value-effect.js";
@@ -29,17 +29,28 @@ import { readRecordEnv } from "./lib/read-record-env.js";
  *
  * @param envKeys Environment variable names mapped to Zod schemas.
  * @param record Object to read values from.
+ * @param options Parsing options. Set `skipValidation` to return raw values and
+ *   `undefined` for unavailable values instead of throwing, such as during CI or
+ *   build steps where runtime env vars are not present.
  * @returns A strongly typed object inferred from `envKeys`.
- * @throws When a configured value is missing or fails validation.
+ * @throws When a configured value is missing or fails validation, unless
+ *   `options.skipValidation` is enabled.
  */
 export function createRecordEnv<const TEnvKeys extends EnvKeys>(
   envKeys: TEnvKeys,
-  record: EnvRecord
+  record: EnvRecord,
+  options?: Options
 ) {
   const env = Effect.runSync(
     Effect.forEach(Object.entries(envKeys), ([key, schema]) =>
-      envReadValueEffect(key, (env) => readRecordEnv(env, record)).pipe(
-        Effect.flatMap((value) => envParseValueEffect(key, schema, value)),
+      envReadValueEffect(
+        key,
+        (env) => readRecordEnv(env, record),
+        options
+      ).pipe(
+        Effect.flatMap((value) =>
+          envParseValueEffect(key, schema, value, options)
+        ),
         Effect.map((value) => [key, value] as const)
       )
     ).pipe(Effect.map((entries) => Object.fromEntries(entries)))

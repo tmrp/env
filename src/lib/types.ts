@@ -7,3 +7,7 @@ export type Env<TEnvKeys extends EnvKeys> = {
 export type EnvKeys = Record<string, ZodType>;
 
 export type EnvRecord = object;
+
+export type Options = {
+  skipValidation?: boolean;
+};

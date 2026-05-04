@@ -31,4 +31,12 @@ describe("createEnv", () => {
       'Environment variable "NAME" is not defined'
     );
   });
+
+  it("allows missing variables when validation is skipped", () => {
+    clearRuntimeGlobals();
+
+    expect(createEnv({ NAME: z.string() }, { skipValidation: true })).toEqual({
+      NAME: undefined,
+    });
+  });
 });

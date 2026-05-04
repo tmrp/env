@@ -42,4 +42,14 @@ describe("createRecordEnv", () => {
       )
     ).toThrow('Environment variable "PORT" failed validation:');
   });
+
+  it("returns raw missing and invalid values when validation is skipped", () => {
+    expect(
+      createRecordEnv(
+        { MISSING: z.string(), PORT: z.coerce.number().int() },
+        { PORT: "not-a-number" },
+        { skipValidation: true }
+      )
+    ).toEqual({ MISSING: undefined, PORT: "not-a-number" });
+  });
 });
