@@ -82,7 +82,7 @@
     "test:runtime:deno": "deno run --no-lock --allow-env --node-modules-dir=auto scripts/runtime-smoke/deno.mjs",
     "test:runtime:node": "node scripts/runtime-smoke/node.mjs",
     "typecheck": "tsc --noEmit",
-    "release": "pnpm build && changeset publish --access public"
+    "release": "changeset publish"
   },
   "dependencies": {
     "effect": "^3.21.2"
