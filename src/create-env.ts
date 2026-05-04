@@ -1,4 +1,4 @@
-import type { EnvKeys } from "./lib/types.js";
+import type { EnvKeys, Options } from "./lib/types.js";
 
 import { createEnvEffect } from "./effects/create-env-effect.js";
 import { readEnvEffect } from "./effects/read-env-effect.js";
@@ -29,9 +29,16 @@ import { RuntimeGlobalsSchema } from "./lib/schema.js";
  * ```
  *
  * @param envKeys Environment variable names mapped to Zod schemas.
+ * @param options Parsing options. Set `skipValidation` to return raw values and
+ *   `undefined` for unavailable variables instead of throwing, such as during CI
+ *   or build steps where runtime env vars are not present.
  * @returns A strongly typed object inferred from `envKeys`.
- * @throws When a configured variable is missing or fails validation.
+ * @throws When a configured variable is missing or fails validation, unless
+ *   `options.skipValidation` is enabled.
  */
-export function createEnv<const TEnvKeys extends EnvKeys>(envKeys: TEnvKeys) {
-  return createEnvEffect(envKeys, RuntimeGlobalsSchema, readEnvEffect);
+export function createEnv<const TEnvKeys extends EnvKeys>(
+  envKeys: TEnvKeys,
+  options?: Options
+) {
+  return createEnvEffect(envKeys, RuntimeGlobalsSchema, readEnvEffect, options);
 }

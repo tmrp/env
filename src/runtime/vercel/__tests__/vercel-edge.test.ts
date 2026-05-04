@@ -12,4 +12,14 @@ describe("createVercelEdgeEnv", () => {
       )
     ).toEqual({ API_URL: "https://example.com", FEATURE_ENABLED: true });
   });
+
+  it("passes options through to record validation", () => {
+    expect(
+      createVercelEdgeEnv(
+        { API_URL: z.url(), MISSING: z.string() },
+        { API_URL: "not-a-url" },
+        { skipValidation: true }
+      )
+    ).toEqual({ API_URL: "not-a-url", MISSING: undefined });
+  });
 });

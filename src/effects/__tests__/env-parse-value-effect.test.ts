@@ -13,4 +13,14 @@ describe("envParseValueEffect", () => {
       Effect.runSync(envParseValueEffect("PORT", z.number(), "42"))
     ).toThrow('Environment variable "PORT" failed validation:');
   });
+
+  it("returns raw values when validation is skipped", () => {
+    expect(
+      Effect.runSync(
+        envParseValueEffect("PORT", z.coerce.number(), "not-a-number", {
+          skipValidation: true,
+        })
+      )
+    ).toBe("not-a-number");
+  });
 });

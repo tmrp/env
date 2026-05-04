@@ -14,6 +14,7 @@ Cloudflare Workers, Vercel Edge, Netlify, browser-injected config, and
 - Validate environment variables with any Zod schema.
 - Infer TypeScript types from your schema definitions.
 - Fail fast when required environment variables are missing.
+- Skip validation for build or CI steps where runtime env vars are unavailable.
 - Trim string values before validation.
 - Support Node.js `process.env`, Deno `Deno.env.get`, Bun `Bun.env`, and known
   global env records.
@@ -328,6 +329,46 @@ const env = createEnv({
 });
 ```
 
+## Skipping Validation
+
+Use `skipValidation` when code needs to import or initialize an env module in a
+context where runtime environment variables are not available, such as CI,
+documentation builds, static analysis, or framework build steps.
+
+```ts
+import { createEnv } from "@tmrp/env";
+import z from "zod";
+
+export const env = createEnv(
+  {
+    API_URL: z.url(),
+    DATABASE_URL: z.url(),
+    PORT: z.coerce.number().int().positive(),
+  },
+  { skipValidation: process.env.CI === "true" }
+);
+```
+
+When `skipValidation` is enabled, missing variables are returned as `undefined`
+instead of throwing, and existing values are returned raw. Zod parsing,
+validation, coercion, transforms, and defaults are not applied.
+
+```ts
+const env = createEnv(
+  {
+    PORT: z.coerce.number(),
+    SECRET_KEY: z.string().min(32),
+  },
+  { skipValidation: true }
+);
+
+env.PORT; // raw string value, or undefined when unavailable
+env.SECRET_KEY; // raw string value, or undefined when unavailable
+```
+
+This option is intended for non-runtime code paths. Do not use it for application
+startup if the returned values will be used as validated configuration.
+
 ## Error Behavior
 
 All creators run synchronously and throw on failure.
@@ -345,7 +386,8 @@ Environment variable "PORT" failed validation: ...
 ```
 
 This behavior is intentional: configuration errors should fail application
-startup immediately.
+startup immediately. When `skipValidation` is enabled, missing and invalid
+values do not throw.
 
 ## Example `.env`
 
@@ -360,62 +402,71 @@ An example file is included at `.env.example`.
 
 ## API Reference
 
-### `createEnv(envKeys)`
+### `createEnv(envKeys, options?)`
 
 Reads variables from the detected Bun, Node, or Deno runtime and validates them.
 
 ```ts
+type Options = {
+  skipValidation?: boolean;
+};
+
 function createEnv<const TEnvKeys extends Record<string, ZodType>>(
-  envKeys: TEnvKeys
+  envKeys: TEnvKeys,
+  options?: Options
 ): { [K in keyof TEnvKeys]: z.infer<TEnvKeys[K]> };
 ```
 
 Use this from `@tmrp/env`.
 
-### `createBunEnv(envKeys)`
+### `createBunEnv(envKeys, options?)`
 
 Reads variables from Bun `Bun.env` and validates them.
 
 ```ts
 function createBunEnv<const TEnvKeys extends Record<string, ZodType>>(
-  envKeys: TEnvKeys
+  envKeys: TEnvKeys,
+  options?: Options
 ): { [K in keyof TEnvKeys]: z.infer<TEnvKeys[K]> };
 ```
 
 Use this from `@tmrp/env/bun`.
 
-### `createNodeEnv(envKeys)`
+### `createNodeEnv(envKeys, options?)`
 
 Reads variables from Node.js `process.env` and validates them.
 
 ```ts
 function createNodeEnv<const TEnvKeys extends Record<string, ZodType>>(
-  envKeys: TEnvKeys
+  envKeys: TEnvKeys,
+  options?: Options
 ): { [K in keyof TEnvKeys]: z.infer<TEnvKeys[K]> };
 ```
 
 Use this from `@tmrp/env/node`.
 
-### `createDenoEnv(envKeys)`
+### `createDenoEnv(envKeys, options?)`
 
 Reads variables from Deno `Deno.env.get` and validates them.
 
 ```ts
 function createDenoEnv<const TEnvKeys extends Record<string, ZodType>>(
-  envKeys: TEnvKeys
+  envKeys: TEnvKeys,
+  options?: Options
 ): { [K in keyof TEnvKeys]: z.infer<TEnvKeys[K]> };
 ```
 
 Use this from `@tmrp/env/deno`.
 
-### `createRecordEnv(envKeys, record)`
+### `createRecordEnv(envKeys, record, options?)`
 
 Reads variables from an explicit object and validates them.
 
 ```ts
 function createRecordEnv<const TEnvKeys extends Record<string, ZodType>>(
   envKeys: TEnvKeys,
-  record: Record<string, unknown>
+  record: Record<string, unknown>,
+  options?: Options
 ): { [K in keyof TEnvKeys]: z.infer<TEnvKeys[K]> };
 ```
 
@@ -426,13 +477,16 @@ Use this from `@tmrp/env/record`.
 These entry points all use the same explicit-record validation model, but expose
 runtime-specific names for clearer application code:
 
-| Entry point             | Function                                      |
-| ----------------------- | --------------------------------------------- |
-| `@tmrp/env/cloudflare`  | `createCloudflareEnv(envKeys, bindings)`      |
-| `@tmrp/env/vercel-edge` | `createVercelEdgeEnv(envKeys, env)`           |
-| `@tmrp/env/netlify`     | `createNetlifyEnv(envKeys, env)`              |
-| `@tmrp/env/browser`     | `createBrowserEnv(envKeys, env)`              |
-| `@tmrp/env/import-meta` | `createImportMetaEnv(envKeys, importMetaEnv)` |
+| Entry point             | Function                                                |
+| ----------------------- | ------------------------------------------------------- |
+| `@tmrp/env/cloudflare`  | `createCloudflareEnv(envKeys, bindings, options?)`      |
+| `@tmrp/env/vercel-edge` | `createVercelEdgeEnv(envKeys, env, options?)`           |
+| `@tmrp/env/netlify`     | `createNetlifyEnv(envKeys, env, options?)`              |
+| `@tmrp/env/browser`     | `createBrowserEnv(envKeys, env, options?)`              |
+| `@tmrp/env/import-meta` | `createImportMetaEnv(envKeys, importMetaEnv, options?)` |
+
+All creators accept the same `Options` object. Set `skipValidation: true` to
+return raw values and `undefined` for unavailable variables instead of throwing.
 
 ## Development
 
