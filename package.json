@@ -81,12 +81,14 @@
     "test:runtime:bun": "bun run scripts/runtime-smoke/bun.mjs",
     "test:runtime:deno": "deno run --no-lock --allow-env --node-modules-dir=auto scripts/runtime-smoke/deno.mjs",
     "test:runtime:node": "node scripts/runtime-smoke/node.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "release": "pnpm build && changeset publish --access public"
   },
   "dependencies": {
     "effect": "^3.21.2"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@eslint/js": "^10.0.1",
     "@tsconfig/recommended": "^1.0.13",
     "@types/node": "^25.6.0",
