@@ -9,5 +9,7 @@ export type EnvKeys = Record<string, ZodType>;
 export type EnvRecord = object;
 
 export type Options = {
+  clientPrefix?: string;
+  isServer?: boolean;
   skipValidation?: boolean;
 };

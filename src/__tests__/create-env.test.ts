@@ -39,4 +39,78 @@ describe("createEnv", () => {
       NAME: undefined,
     });
   });
+
+  describe("clientPrefix", () => {
+    it("validates all variables on the server", () => {
+      useRuntimeGlobals({
+        process: {
+          env: {
+            NEXT_PUBLIC_API_URL: "https://api.example.com",
+          },
+        },
+      });
+
+      expect(() =>
+        createEnv(
+          {
+            DATABASE_URL: z.string(),
+            NEXT_PUBLIC_API_URL: z.string(),
+          },
+          {
+            clientPrefix: "NEXT_PUBLIC_",
+            isServer: true,
+          }
+        )
+      ).toThrow('Environment variable "DATABASE_URL" is not defined');
+    });
+
+    it("skips validation for non-prefixed variables on the client", () => {
+      useRuntimeGlobals({
+        process: {
+          env: {
+            NEXT_PUBLIC_API_URL: "https://api.example.com",
+          },
+        },
+      });
+
+      const env = createEnv(
+        {
+          DATABASE_URL: z.string(),
+          NEXT_PUBLIC_API_URL: z.string(),
+        },
+        {
+          clientPrefix: "NEXT_PUBLIC_",
+          isServer: false,
+        }
+      );
+
+      expect(env).toEqual({
+        DATABASE_URL: undefined,
+        NEXT_PUBLIC_API_URL: "https://api.example.com",
+      });
+    });
+
+    it("throws error for missing prefixed variables on the client", () => {
+      useRuntimeGlobals({
+        process: {
+          env: {
+            DATABASE_URL: "postgres://localhost",
+          },
+        },
+      });
+
+      expect(() =>
+        createEnv(
+          {
+            DATABASE_URL: z.string(),
+            NEXT_PUBLIC_API_URL: z.string(),
+          },
+          {
+            clientPrefix: "NEXT_PUBLIC_",
+            isServer: false,
+          }
+        )
+      ).toThrow('Environment variable "NEXT_PUBLIC_API_URL" is not defined');
+    });
+  });
 });

@@ -52,4 +52,81 @@ describe("createRecordEnv", () => {
       )
     ).toEqual({ MISSING: undefined, PORT: "not-a-number" });
   });
+
+  describe("clientPrefix", () => {
+    it("validates all variables on the server", () => {
+      const run = () =>
+        createRecordEnv(
+          {
+            DATABASE_URL: z.string(),
+            NEXT_PUBLIC_API_URL: z.string(),
+          },
+          {
+            NEXT_PUBLIC_API_URL: "https://api.example.com",
+          },
+          {
+            clientPrefix: "NEXT_PUBLIC_",
+            isServer: true,
+          }
+        );
+      expect(run).toThrow('Environment variable "DATABASE_URL" is not defined');
+    });
+
+    it("skips validation for non-prefixed variables on the client", () => {
+      const env = createRecordEnv(
+        {
+          DATABASE_URL: z.string(),
+          NEXT_PUBLIC_API_URL: z.string(),
+        },
+        {
+          NEXT_PUBLIC_API_URL: "https://api.example.com",
+        },
+        {
+          clientPrefix: "NEXT_PUBLIC_",
+          isServer: false,
+        }
+      );
+      expect(env).toEqual({
+        DATABASE_URL: undefined,
+        NEXT_PUBLIC_API_URL: "https://api.example.com",
+      });
+    });
+
+    it("throws error for missing prefixed variables on the client", () => {
+      const run = () =>
+        createRecordEnv(
+          {
+            DATABASE_URL: z.string(),
+            NEXT_PUBLIC_API_URL: z.string(),
+          },
+          {
+            DATABASE_URL: "postgres://localhost",
+          },
+          {
+            clientPrefix: "NEXT_PUBLIC_",
+            isServer: false,
+          }
+        );
+      expect(run).toThrow(
+        'Environment variable "NEXT_PUBLIC_API_URL" is not defined'
+      );
+    });
+
+    it("defaults to validating all variables on the client if no prefix is set", () => {
+      const run = () =>
+        createRecordEnv(
+          {
+            DATABASE_URL: z.string(),
+            NEXT_PUBLIC_API_URL: z.string(),
+          },
+          {
+            NEXT_PUBLIC_API_URL: "https://api.example.com",
+          },
+          {
+            isServer: false,
+          }
+        );
+      expect(run).toThrow('Environment variable "DATABASE_URL" is not defined');
+    });
+  });
 });

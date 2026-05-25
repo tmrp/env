@@ -3,11 +3,11 @@
 Type-safe environment variable parsing for TypeScript projects, powered by
 [Zod](https://zod.dev/).
 
-`@tmrp/env` reads environment variables from the current runtime or an
-explicit env-like object, validates them with Zod schemas, and returns a
-strongly typed object for application code. It supports Node.js, Deno, Bun,
-Cloudflare Workers, Vercel Edge, Netlify, browser-injected config, and
-`import.meta.env`-based toolchains.
+`@tmrp/env` reads environment variables from the current runtime or an explicit
+env-like object, validates them with Zod schemas, and returns a strongly typed
+object for application code. It supports Node.js, Deno, Bun, Cloudflare Workers,
+Vercel Edge, Netlify, browser-injected config, and `import.meta.env`-based
+toolchains.
 
 ## Features
 
@@ -278,6 +278,36 @@ const env = createImportMetaEnv(
 );
 ```
 
+### Client-exposed Variables (`clientPrefix`)
+
+When building applications that run code on both the server and client-side
+(e.g. Next.js, Vite, Nuxt), the bundler statically injects environment variables
+that are prefixed with a specific keyword (like `NEXT_PUBLIC_` or `VITE_`).
+
+On the client-side, trying to validate server-only environment variables will
+normally throw errors because those variables are not exposed. To prevent this,
+you can pass the `clientPrefix` option:
+
+```ts
+import { createEnv } from "@tmrp/env";
+import z from "zod";
+
+const env = createEnv(
+  {
+    DATABASE_URL: z.string(), // Server-only
+    NEXT_PUBLIC_API_URL: z.url(), // Client-exposed
+  },
+  {
+    clientPrefix: "NEXT_PUBLIC_",
+  }
+);
+```
+
+When running in a client environment (determined automatically by checking if
+`"window" in globalThis` is false, or overridden by passing `isServer: false`),
+only keys that start with the `clientPrefix` will be read and validated. All
+other keys will bypass validation and return `undefined` on the client.
+
 ## Defining Schemas
 
 Pass an object whose keys are environment variable names and whose values are
@@ -366,8 +396,9 @@ env.PORT; // raw string value, or undefined when unavailable
 env.SECRET_KEY; // raw string value, or undefined when unavailable
 ```
 
-This option is intended for non-runtime code paths. Do not use it for application
-startup if the returned values will be used as validated configuration.
+This option is intended for non-runtime code paths. Do not use it for
+application startup if the returned values will be used as validated
+configuration.
 
 ## Error Behavior
 
@@ -408,6 +439,8 @@ Reads variables from the detected Bun, Node, or Deno runtime and validates them.
 
 ```ts
 type Options = {
+  clientPrefix?: string;
+  isServer?: boolean;
   skipValidation?: boolean;
 };
 
