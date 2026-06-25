@@ -21,6 +21,7 @@ jobs:
       (github.event.pull_request.merged == true && (
         startsWith(github.event.pull_request.head.ref, 'feat') ||
         startsWith(github.event.pull_request.head.ref, 'release') ||
+        startsWith(github.event.pull_request.head.ref, 'chore/release') ||
         startsWith(github.event.pull_request.head.ref, 'changeset-release')
       ))
     runs-on: ubuntu-latest
