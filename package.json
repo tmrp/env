@@ -103,11 +103,11 @@
     "eslint": "^10.3.0",
     "eslint-plugin-perfectionist": "^5.9.0",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "globals": "^17.6.0",
+    "globals": "^17.7.0",
     "prettier": "^3.8.3",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.59.1",
+    "typescript-eslint": "^8.62.0",
     "vitest": "^4.1.5",
     "zod": "^4.4.2"
   },
