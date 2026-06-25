@@ -1,5 +1,15 @@
 # @tmrp/env
 
+## 0.1.6
+
+### Patch Changes
+
+- [#34](https://github.com/tmrp/env/pull/34)
+  [`f927339`](https://github.com/tmrp/env/commit/f9273395d0c87f097a133e9ad1e5fdd7e9b507f2)
+  Thanks [@tmrp](https://github.com/tmrp)! - Internal maintenance: dependency
+  updates, move to the Node.js LTS baseline, and adopt the automated Changesets
+  release flow. No changes to the public API or runtime behavior.
+
 ## 0.1.4
 
 ### Patch Changes
