@@ -86,7 +86,7 @@
     "test:runtime:deno": "deno run --no-lock --allow-env --node-modules-dir=auto scripts/runtime-smoke/deno.mjs",
     "test:runtime:node": "node scripts/runtime-smoke/node.mjs",
     "typecheck": "tsc --noEmit",
-    "version": "changeset version && pnpm install --lockfile-only && prettier --write \"**/CHANGELOG.md\"",
+    "version:packages": "changeset version && pnpm install --lockfile-only && prettier --write \"**/CHANGELOG.md\"",
     "release": "changeset publish"
   },
   "dependencies": {
