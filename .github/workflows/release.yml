@@ -1,35 +1,29 @@
 name: Release
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
       - main
   workflow_dispatch:
 
+# Cancel superseded release runs on the same ref.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: write
-  id-token: write
+  id-token: write # npm provenance / OIDC trusted publishing
   pull-requests: write
 
 jobs:
   release:
     name: Release
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.pull_request.merged == true && (
-        startsWith(github.event.pull_request.head.ref, 'feat') ||
-        startsWith(github.event.pull_request.head.ref, 'release') ||
-        startsWith(github.event.pull_request.head.ref, 'chore/release') ||
-        startsWith(github.event.pull_request.head.ref, 'changeset-release')
-      ))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.base.ref || 'main' }}
           fetch-depth: 0
 
       - name: Setup pnpm
@@ -49,6 +43,10 @@ jobs:
 
       - name: Setup Deno
         uses: denoland/setup-deno@v2
+
+      # OIDC trusted publishing requires npm >= 11.5.1.
+      - name: Ensure recent npm
+        run: npm install -g npm@latest
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -71,11 +69,20 @@ jobs:
       - name: Runtime Smoke Tests
         run: pnpm test:runtime
 
-      - name: Create Release Pull Request
+      # On push to main, this either opens/updates a "Version Packages" PR
+      # (when changesets are pending) or publishes to npm (once that PR is
+      # merged and the changesets are consumed).
+      - name: Create Release PR or Publish
         uses: changesets/action@v1
         with:
+          version: pnpm version
           publish: pnpm release
+          commit: "chore(release): version packages"
+          title: "chore(release): version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_ACCESS: public
           NPM_CONFIG_PROVENANCE: true
+          # Fallback for classic token auth — only needed if OIDC trusted
+          # publishing is NOT configured for @tmrp/env on npmjs.com, or the
+          # runner's npm is < 11.5.1. Add NPM_TOKEN as a repo secret to use it.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

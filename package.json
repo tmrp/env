@@ -75,6 +75,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "changeset": "changeset",
     "clean": "rm -rf dist",
     "format": "prettier --write .",
     "lint": "eslint .",
@@ -85,12 +86,14 @@
     "test:runtime:deno": "deno run --no-lock --allow-env --node-modules-dir=auto scripts/runtime-smoke/deno.mjs",
     "test:runtime:node": "node scripts/runtime-smoke/node.mjs",
     "typecheck": "tsc --noEmit",
+    "version": "changeset version && pnpm install --lockfile-only && prettier --write \"**/CHANGELOG.md\"",
     "release": "changeset publish"
   },
   "dependencies": {
     "effect": "^3.21.2"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.7.0",
     "@changesets/cli": "^2.31.0",
     "@eslint/js": "^10.0.1",
     "@tsconfig/recommended": "^1.0.13",
