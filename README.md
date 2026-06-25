@@ -566,6 +566,13 @@ Coverage thresholds are 100% for statements, branches, functions, and lines.
 pnpm build
 ```
 
+### Releasing
+
+This package uses [Changesets](https://github.com/changesets/changesets).
+Versioning and npm publishing are automated — include a changeset with your PR
+(`pnpm changeset`) and the release flow handles the rest. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow.
+
 ## Project Structure
 
 ```txt
