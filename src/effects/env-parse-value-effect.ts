@@ -1,8 +1,7 @@
-import type { ZodType } from "zod";
-
 import { Effect } from "effect";
 
 import type { Options } from "../lib/types.js";
+import type { ZodType } from "zod";
 
 export const envParseValueEffect = (
   key: string,

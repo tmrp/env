@@ -1,8 +1,9 @@
 /* global Bun */
 
 import { createBunEnv } from "@tmrp/env/bun";
-import { strict as assert } from "node:assert";
 import z from "zod";
+
+import { strict as assert } from "node:assert";
 
 Bun.env.RUNTIME_SMOKE_BUN = " bun ";
 

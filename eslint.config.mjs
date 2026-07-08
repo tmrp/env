@@ -6,6 +6,7 @@ import tseslint from "typescript-eslint";
 import { eslintPerfectionistConfig } from "./tooling/eslint.perfectionist.js";
 
 export default defineConfig([
+  ...eslintPerfectionistConfig,
   {
     ignores: [
       "node_modules/**",
@@ -15,7 +16,6 @@ export default defineConfig([
       "/coverage/**",
     ],
   },
-  ...eslintPerfectionistConfig,
   {
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
     plugins: { js },

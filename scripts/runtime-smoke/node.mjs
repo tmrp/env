@@ -6,8 +6,9 @@ import { createNetlifyEnv } from "@tmrp/env/netlify";
 import { createNodeEnv } from "@tmrp/env/node";
 import { createRecordEnv } from "@tmrp/env/record";
 import { createVercelEdgeEnv } from "@tmrp/env/vercel-edge";
-import { strict as assert } from "node:assert";
 import z from "zod";
+
+import { strict as assert } from "node:assert";
 
 process.env.RUNTIME_SMOKE_NODE = " node ";
 process.env.RUNTIME_SMOKE_AUTO = " auto ";
