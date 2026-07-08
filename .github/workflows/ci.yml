@@ -42,7 +42,8 @@ jobs:
 
       # Remind PR authors to include a changeset. Non-blocking on push to main.
       - name: Changeset status
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && startsWith(github.head_ref,
+          'release-')
         run: pnpm changeset status --since=origin/${{ github.base_ref }}
 
       - name: Lint
