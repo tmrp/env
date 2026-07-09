@@ -44,10 +44,6 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
 
-      # OIDC trusted publishing requires npm >= 11.5.1.
-      - name: Ensure recent npm
-        run: npm install -g npm@latest
-
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
