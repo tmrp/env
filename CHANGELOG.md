@@ -1,5 +1,13 @@
 # @tmrp/env
 
+## 0.1.8
+
+### Patch Changes
+
+- [#52](https://github.com/tmrp/env/pull/52)
+  [`a5baacd`](https://github.com/tmrp/env/commit/a5baacd47b393a61da54c795767553818bbb9f14)
+  Thanks [@tmrp](https://github.com/tmrp)! - update project dependencies
+
 ## 0.1.7
 
 ### Patch Changes
