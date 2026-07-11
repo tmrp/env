@@ -18,7 +18,3 @@ updates:
         applies-to: version-updates
         update-types:
           - "minor"
-      major-updates:
-        applies-to: version-updates
-        update-types:
-          - "major"
