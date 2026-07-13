@@ -1,5 +1,14 @@
 # @tmrp/env
 
+## 0.1.9
+
+### Patch Changes
+
+- [#53](https://github.com/tmrp/env/pull/53)
+  [`5929236`](https://github.com/tmrp/env/commit/5929236fbc17301ffcee49274a9549fd6e1d7348)
+  Thanks [@dependabot](https://github.com/apps/dependabot)! - patch dependency
+  versions
+
 ## 0.1.8
 
 ### Patch Changes
