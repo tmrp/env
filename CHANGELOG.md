@@ -1,5 +1,16 @@
 # @tmrp/env
 
+## 0.2.0
+
+### Minor Changes
+
+- [#59](https://github.com/tmrp/env/pull/59)
+  [`529b9a6`](https://github.com/tmrp/env/commit/529b9a6db1f353d946889b47858fc2855b31d874)
+  Thanks [@tmrp](https://github.com/tmrp)! - Make skipped-validation and
+  client-filtered return types reflect their runtime values, isolate automatic
+  runtime detection from malformed unrelated globals, and ignore inherited
+  properties in explicit environment records.
+
 ## 0.1.9
 
 ### Patch Changes
