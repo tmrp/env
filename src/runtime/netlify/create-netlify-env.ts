@@ -28,10 +28,9 @@ import { createRecordEnv } from "../record/create-record-env.js";
  * @throws When a configured value is missing or fails validation, unless
  *   `options.skipValidation` is enabled.
  */
-export function createNetlifyEnv<const TEnvKeys extends EnvKeys>(
-  envKeys: TEnvKeys,
-  env: EnvRecord,
-  options?: Options
-) {
+export function createNetlifyEnv<
+  const TEnvKeys extends EnvKeys,
+  const TOptions extends Options | undefined = undefined,
+>(envKeys: TEnvKeys, env: EnvRecord, options?: TOptions) {
   return createRecordEnv(envKeys, env, options);
 }

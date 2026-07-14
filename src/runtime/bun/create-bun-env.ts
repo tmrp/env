@@ -2,7 +2,6 @@ import type { EnvKeys, Options } from "../../lib/types.js";
 
 import { createEnvEffect } from "../../effects/create-env-effect.js";
 import { readBunEnv } from "./lib/read-bun-env.js";
-import { BunRuntimeGlobalsSchema } from "./lib/schema.js";
 
 /**
  * Creates a typed environment object from Bun's `Bun.env`.
@@ -29,14 +28,9 @@ import { BunRuntimeGlobalsSchema } from "./lib/schema.js";
  * @throws When a configured variable is missing or fails validation, unless
  *   `options.skipValidation` is enabled.
  */
-export function createBunEnv<const TEnvKeys extends EnvKeys>(
-  envKeys: TEnvKeys,
-  options?: Options
-) {
-  return createEnvEffect(
-    envKeys,
-    BunRuntimeGlobalsSchema,
-    (env) => readBunEnv(env),
-    options
-  );
+export function createBunEnv<
+  const TEnvKeys extends EnvKeys,
+  const TOptions extends Options | undefined = undefined,
+>(envKeys: TEnvKeys, options?: TOptions) {
+  return createEnvEffect(envKeys, (env) => readBunEnv(env), options);
 }

@@ -35,10 +35,9 @@ import { createRecordEnv } from "../record/create-record-env.js";
  * @throws When a configured binding is missing or fails validation, unless
  *   `options.skipValidation` is enabled.
  */
-export function createCloudflareEnv<const TEnvKeys extends EnvKeys>(
-  envKeys: TEnvKeys,
-  bindings: EnvRecord,
-  options?: Options
-) {
+export function createCloudflareEnv<
+  const TEnvKeys extends EnvKeys,
+  const TOptions extends Options | undefined = undefined,
+>(envKeys: TEnvKeys, bindings: EnvRecord, options?: TOptions) {
   return createRecordEnv(envKeys, bindings, options);
 }

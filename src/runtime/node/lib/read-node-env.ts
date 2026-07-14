@@ -1,3 +1,4 @@
+import { readRecordEnv } from "../../record/lib/read-record-env.js";
 import { NodeRuntimeGlobalsSchema } from "./schema.js";
 
 export const readNodeEnv = (env: string) => {
@@ -13,5 +14,5 @@ export const readNodeEnv = (env: string) => {
     return undefined;
   }
 
-  return nodeRuntimeGlobals.process.env?.[env]?.trim() ?? undefined;
+  return readRecordEnv(env, nodeRuntimeGlobals.process.env);
 };

@@ -33,4 +33,12 @@ describe("readNodeEnv", () => {
     useRuntimeGlobals({ process: { env: {} } });
     expect(readNodeEnv("NAME")).toBeUndefined();
   });
+
+  it("ignores inherited environment properties", () => {
+    useRuntimeGlobals({
+      process: { env: Object.create({ NAME: "inherited" }) as object },
+    });
+
+    expect(readNodeEnv("NAME")).toBeUndefined();
+  });
 });

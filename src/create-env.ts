@@ -2,7 +2,6 @@ import type { EnvKeys, Options } from "./lib/types.js";
 
 import { createEnvEffect } from "./effects/create-env-effect.js";
 import { readEnvEffect } from "./effects/read-env-effect.js";
-import { RuntimeGlobalsSchema } from "./lib/schema.js";
 
 /**
  * Creates a typed environment object from the currently available runtime.
@@ -36,9 +35,9 @@ import { RuntimeGlobalsSchema } from "./lib/schema.js";
  * @throws When a configured variable is missing or fails validation, unless
  *   `options.skipValidation` is enabled.
  */
-export function createEnv<const TEnvKeys extends EnvKeys>(
-  envKeys: TEnvKeys,
-  options?: Options
-) {
-  return createEnvEffect(envKeys, RuntimeGlobalsSchema, readEnvEffect, options);
+export function createEnv<
+  const TEnvKeys extends EnvKeys,
+  const TOptions extends Options | undefined = undefined,
+>(envKeys: TEnvKeys, options?: TOptions) {
+  return createEnvEffect(envKeys, readEnvEffect, options);
 }

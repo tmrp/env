@@ -1,20 +1,24 @@
+import { parseRuntimeGlobal } from "../../../lib/parse-runtime-global.js";
 import { readRecordEnv } from "../../record/lib/read-record-env.js";
-import { BrowserRuntimeGlobalsSchema } from "./schema.js";
+import {
+  BrowserAppConfigRuntimeGlobalsSchema,
+  BrowserEnvRuntimeGlobalsSchema,
+} from "./schema.js";
 
 export const readBrowserEnv = (env: string) => {
-  const browserGlobalScope = BrowserRuntimeGlobalsSchema.safeParse(globalThis);
+  const appConfigGlobalScope = parseRuntimeGlobal(
+    BrowserAppConfigRuntimeGlobalsSchema
+  );
 
-  if (!browserGlobalScope.success) {
-    return undefined;
+  if (appConfigGlobalScope?.__APP_CONFIG__) {
+    return readRecordEnv(env, appConfigGlobalScope.__APP_CONFIG__);
   }
 
-  const browserRuntimeGlobals = browserGlobalScope.data;
-  const browserEnv =
-    browserRuntimeGlobals.__APP_CONFIG__ ?? browserRuntimeGlobals.__ENV__;
+  const envGlobalScope = parseRuntimeGlobal(BrowserEnvRuntimeGlobalsSchema);
 
-  if (!browserEnv) {
-    return undefined;
+  if (envGlobalScope?.__ENV__) {
+    return readRecordEnv(env, envGlobalScope.__ENV__);
   }
 
-  return readRecordEnv(env, browserEnv);
+  return undefined;
 };

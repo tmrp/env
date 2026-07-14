@@ -1,6 +1,11 @@
 import { Effect } from "effect";
 
-import type { Env, EnvKeys, EnvRecord, Options } from "../../lib/types.js";
+import type {
+  EnvForOptions,
+  EnvKeys,
+  EnvRecord,
+  Options,
+} from "../../lib/types.js";
 
 import { envParseValueEffect } from "../../effects/env-parse-value-effect.js";
 import { envReadValueEffect } from "../../effects/env-read-value-effect.js";
@@ -36,11 +41,10 @@ import { readRecordEnv } from "./lib/read-record-env.js";
  * @throws When a configured value is missing or fails validation, unless
  *   `options.skipValidation` is enabled.
  */
-export function createRecordEnv<const TEnvKeys extends EnvKeys>(
-  envKeys: TEnvKeys,
-  record: EnvRecord,
-  options?: Options
-) {
+export function createRecordEnv<
+  const TEnvKeys extends EnvKeys,
+  const TOptions extends Options | undefined = undefined,
+>(envKeys: TEnvKeys, record: EnvRecord, options?: TOptions) {
   const isServer = options?.isServer ?? !("window" in globalThis);
   const clientPrefix = options?.clientPrefix;
 
@@ -67,5 +71,5 @@ export function createRecordEnv<const TEnvKeys extends EnvKeys>(
     }).pipe(Effect.map((entries) => Object.fromEntries(entries)))
   );
 
-  return env as Env<TEnvKeys>;
+  return env as EnvForOptions<TEnvKeys, TOptions>;
 }
