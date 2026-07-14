@@ -1,8 +1,7 @@
 import type { EnvKeys, Options } from "../../lib/types.js";
 
 import { createEnvEffect } from "../../effects/create-env-effect.js";
-import { readEnvEffect } from "../../effects/read-env-effect.js";
-import { DenoRuntimeGlobalsSchema } from "./lib/schema.js";
+import { readDenoEnv } from "./lib/read-deno-env.js";
 
 /**
  * Creates a typed environment object from Deno's `Deno.env.get`.
@@ -28,14 +27,9 @@ import { DenoRuntimeGlobalsSchema } from "./lib/schema.js";
  * @throws When a configured variable is missing or fails validation, unless
  *   `options.skipValidation` is enabled.
  */
-export function createDenoEnv<const TEnvKeys extends EnvKeys>(
-  envKeys: TEnvKeys,
-  options?: Options
-) {
-  return createEnvEffect(
-    envKeys,
-    DenoRuntimeGlobalsSchema,
-    readEnvEffect,
-    options
-  );
+export function createDenoEnv<
+  const TEnvKeys extends EnvKeys,
+  const TOptions extends Options | undefined = undefined,
+>(envKeys: TEnvKeys, options?: TOptions) {
+  return createEnvEffect(envKeys, readDenoEnv, options);
 }

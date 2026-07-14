@@ -1,19 +1,17 @@
 import { Effect } from "effect";
 
-import type { RuntimeGlobalsSchemaType } from "../lib/schema.js";
-import type { Env, EnvKeys, Options } from "../lib/types.js";
+import type { EnvForOptions, EnvKeys, Options } from "../lib/types.js";
 
 import { envParseValueEffect } from "./env-parse-value-effect.js";
 import { envReadValueEffect } from "./env-read-value-effect.js";
 
-export function createEnvEffect<const TEnvKeys extends EnvKeys>(
+export function createEnvEffect<
+  const TEnvKeys extends EnvKeys,
+  const TOptions extends Options | undefined = undefined,
+>(
   envKeys: TEnvKeys,
-  runtimeSchema: RuntimeGlobalsSchemaType,
-  runtimeEnvReadEffect: (
-    key: string,
-    schema: RuntimeGlobalsSchemaType
-  ) => unknown,
-  options?: Options
+  runtimeEnvReadEffect: (key: string) => unknown,
+  options?: TOptions
 ) {
   const isServer = options?.isServer ?? !("window" in globalThis);
   const clientPrefix = options?.clientPrefix;
@@ -28,11 +26,7 @@ export function createEnvEffect<const TEnvKeys extends EnvKeys>(
         return Effect.succeed([key, undefined] as const);
       }
 
-      return envReadValueEffect(
-        key,
-        (env) => runtimeEnvReadEffect(env, runtimeSchema),
-        options
-      ).pipe(
+      return envReadValueEffect(key, runtimeEnvReadEffect, options).pipe(
         Effect.flatMap((value) =>
           envParseValueEffect(key, schema, value, options)
         ),
@@ -41,5 +35,5 @@ export function createEnvEffect<const TEnvKeys extends EnvKeys>(
     }).pipe(Effect.map((entries) => Object.fromEntries(entries)))
   );
 
-  return env as Env<TEnvKeys>;
+  return env as EnvForOptions<TEnvKeys, TOptions>;
 }

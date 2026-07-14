@@ -1,8 +1,7 @@
 import type { EnvKeys, Options } from "../../lib/types.js";
 
 import { createEnvEffect } from "../../effects/create-env-effect.js";
-import { readEnvEffect } from "../../effects/read-env-effect.js";
-import { NodeRuntimeGlobalsSchema } from "./lib/schema.js";
+import { readNodeEnv } from "./lib/read-node-env.js";
 
 /**
  * Creates a typed environment object from Node.js `process.env`.
@@ -32,14 +31,9 @@ import { NodeRuntimeGlobalsSchema } from "./lib/schema.js";
  * @throws When a configured variable is missing or fails validation, unless
  *   `options.skipValidation` is enabled.
  */
-export function createNodeEnv<const TEnvKeys extends EnvKeys>(
-  envKeys: TEnvKeys,
-  options?: Options
-) {
-  return createEnvEffect(
-    envKeys,
-    NodeRuntimeGlobalsSchema,
-    readEnvEffect,
-    options
-  );
+export function createNodeEnv<
+  const TEnvKeys extends EnvKeys,
+  const TOptions extends Options | undefined = undefined,
+>(envKeys: TEnvKeys, options?: TOptions) {
+  return createEnvEffect(envKeys, readNodeEnv, options);
 }

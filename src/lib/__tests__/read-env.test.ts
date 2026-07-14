@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
 import {
   clearRuntimeGlobals,
@@ -7,7 +7,6 @@ import {
   useRuntimeGlobals,
 } from "../../__tests__/runtime-globals.js";
 import { readEnv } from "../read-env.js";
-import { RuntimeGlobalsSchema } from "../schema.js";
 
 beforeAll(() => {
   saveRuntimeGlobals();
@@ -80,14 +79,12 @@ describe("readEnv", () => {
     expect(readEnv("NAME")).toBeUndefined();
   });
 
-  it("throws when runtime schema parsing throws", () => {
-    const safeParse = vi
-      .spyOn(RuntimeGlobalsSchema, "safeParse")
-      .mockImplementation(() => {
-        throw new Error("boom");
-      });
+  it("ignores malformed globals from unrelated runtimes", () => {
+    useRuntimeGlobals({
+      __ENV__: "owned by another library",
+      process: { env: { NAME: " node " } },
+    });
 
-    expect(() => readEnv("NAME")).toThrow();
-    safeParse.mockRestore();
+    expect(readEnv("NAME")).toBe("node");
   });
 });

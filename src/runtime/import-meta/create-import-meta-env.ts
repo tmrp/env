@@ -31,10 +31,9 @@ import { createRecordEnv } from "../record/create-record-env.js";
  * @throws When a configured value is missing or fails validation, unless
  *   `options.skipValidation` is enabled.
  */
-export function createImportMetaEnv<const TEnvKeys extends EnvKeys>(
-  envKeys: TEnvKeys,
-  importMetaEnv: EnvRecord,
-  options?: Options
-) {
+export function createImportMetaEnv<
+  const TEnvKeys extends EnvKeys,
+  const TOptions extends Options | undefined = undefined,
+>(envKeys: TEnvKeys, importMetaEnv: EnvRecord, options?: TOptions) {
   return createRecordEnv(envKeys, importMetaEnv, options);
 }

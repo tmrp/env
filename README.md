@@ -381,7 +381,8 @@ export const env = createEnv(
 
 When `skipValidation` is enabled, missing variables are returned as `undefined`
 instead of throwing, and existing values are returned raw. Zod parsing,
-validation, coercion, transforms, and defaults are not applied.
+validation, coercion, transforms, and defaults are not applied. Because those
+raw values have not been validated, their properties are typed as `unknown`.
 
 ```ts
 const env = createEnv(
@@ -435,7 +436,7 @@ An example file is included at `.env.example`.
 
 ### `createEnv(envKeys, options?)`
 
-Reads variables from the detected Bun, Node, or Deno runtime and validates them.
+Reads variables from the detected supported runtime and validates them.
 
 ```ts
 type Options = {
@@ -444,11 +445,15 @@ type Options = {
   skipValidation?: boolean;
 };
 
-function createEnv<const TEnvKeys extends Record<string, ZodType>>(
-  envKeys: TEnvKeys,
-  options?: Options
-): { [K in keyof TEnvKeys]: z.infer<TEnvKeys[K]> };
+function createEnv<
+  const TEnvKeys extends Record<string, ZodType>,
+  const TOptions extends Options | undefined = undefined,
+>(envKeys: TEnvKeys, options?: TOptions): EnvForOptions<TEnvKeys, TOptions>;
 ```
+
+`EnvForOptions` returns parsed Zod outputs during normal validation, `unknown`
+raw values when validation can be skipped, and includes `undefined` for keys
+that client-prefix filtering can remove.
 
 Use this from `@tmrp/env`.
 
@@ -457,10 +462,10 @@ Use this from `@tmrp/env`.
 Reads variables from Bun `Bun.env` and validates them.
 
 ```ts
-function createBunEnv<const TEnvKeys extends Record<string, ZodType>>(
-  envKeys: TEnvKeys,
-  options?: Options
-): { [K in keyof TEnvKeys]: z.infer<TEnvKeys[K]> };
+function createBunEnv<
+  const TEnvKeys extends Record<string, ZodType>,
+  const TOptions extends Options | undefined = undefined,
+>(envKeys: TEnvKeys, options?: TOptions): EnvForOptions<TEnvKeys, TOptions>;
 ```
 
 Use this from `@tmrp/env/bun`.
@@ -470,10 +475,10 @@ Use this from `@tmrp/env/bun`.
 Reads variables from Node.js `process.env` and validates them.
 
 ```ts
-function createNodeEnv<const TEnvKeys extends Record<string, ZodType>>(
-  envKeys: TEnvKeys,
-  options?: Options
-): { [K in keyof TEnvKeys]: z.infer<TEnvKeys[K]> };
+function createNodeEnv<
+  const TEnvKeys extends Record<string, ZodType>,
+  const TOptions extends Options | undefined = undefined,
+>(envKeys: TEnvKeys, options?: TOptions): EnvForOptions<TEnvKeys, TOptions>;
 ```
 
 Use this from `@tmrp/env/node`.
@@ -483,10 +488,10 @@ Use this from `@tmrp/env/node`.
 Reads variables from Deno `Deno.env.get` and validates them.
 
 ```ts
-function createDenoEnv<const TEnvKeys extends Record<string, ZodType>>(
-  envKeys: TEnvKeys,
-  options?: Options
-): { [K in keyof TEnvKeys]: z.infer<TEnvKeys[K]> };
+function createDenoEnv<
+  const TEnvKeys extends Record<string, ZodType>,
+  const TOptions extends Options | undefined = undefined,
+>(envKeys: TEnvKeys, options?: TOptions): EnvForOptions<TEnvKeys, TOptions>;
 ```
 
 Use this from `@tmrp/env/deno`.
@@ -496,11 +501,14 @@ Use this from `@tmrp/env/deno`.
 Reads variables from an explicit object and validates them.
 
 ```ts
-function createRecordEnv<const TEnvKeys extends Record<string, ZodType>>(
+function createRecordEnv<
+  const TEnvKeys extends Record<string, ZodType>,
+  const TOptions extends Options | undefined = undefined,
+>(
   envKeys: TEnvKeys,
   record: Record<string, unknown>,
-  options?: Options
-): { [K in keyof TEnvKeys]: z.infer<TEnvKeys[K]> };
+  options?: TOptions
+): EnvForOptions<TEnvKeys, TOptions>;
 ```
 
 Use this from `@tmrp/env/record`.

@@ -10,4 +10,19 @@ describe("readRecordEnv", () => {
     expect(readRecordEnv("MISSING", {})).toBeUndefined();
     expect(readRecordEnv("NULL", { NULL: null })).toBeUndefined();
   });
+
+  it("ignores inherited properties", () => {
+    const record = Object.create({ NAME: "inherited" }) as object;
+
+    expect(readRecordEnv("NAME", record)).toBeUndefined();
+    expect(readRecordEnv("toString", {})).toBeUndefined();
+  });
+
+  it("reads own properties from null-prototype records", () => {
+    const record = Object.assign(Object.create(null) as object, {
+      NAME: " value ",
+    });
+
+    expect(readRecordEnv("NAME", record)).toBe("value");
+  });
 });

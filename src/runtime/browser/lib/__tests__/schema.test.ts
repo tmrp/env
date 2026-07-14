@@ -1,16 +1,25 @@
 import { describe, expect, it } from "vitest";
 
-import { BrowserRuntimeGlobalsSchema } from "../schema.js";
+import {
+  BrowserAppConfigRuntimeGlobalsSchema,
+  BrowserEnvRuntimeGlobalsSchema,
+} from "../schema.js";
 
-describe("BrowserRuntimeGlobalsSchema", () => {
-  it("validates browser runtime globals", () => {
+describe("browser runtime global schemas", () => {
+  it("validates browser runtime globals independently", () => {
     expect(
-      BrowserRuntimeGlobalsSchema.safeParse({
+      BrowserAppConfigRuntimeGlobalsSchema.safeParse({
         __APP_CONFIG__: { NAME: "value" },
       }).success
     ).toBe(true);
     expect(
-      BrowserRuntimeGlobalsSchema.safeParse({ __APP_CONFIG__: null }).success
+      BrowserAppConfigRuntimeGlobalsSchema.safeParse({ __APP_CONFIG__: null })
+        .success
     ).toBe(false);
+    expect(
+      BrowserEnvRuntimeGlobalsSchema.safeParse({
+        __ENV__: { NAME: "value" },
+      }).success
+    ).toBe(true);
   });
 });

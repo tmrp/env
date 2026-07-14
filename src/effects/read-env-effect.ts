@@ -1,60 +1,75 @@
-import { Effect } from "effect";
+import { parseRuntimeGlobal } from "../lib/parse-runtime-global.js";
+import {
+  BrowserAppConfigRuntimeGlobalsSchema,
+  BrowserEnvRuntimeGlobalsSchema,
+} from "../runtime/browser/lib/schema.js";
+import { BunRuntimeGlobalsSchema } from "../runtime/bun/lib/schema.js";
+import { CloudflareRuntimeGlobalsSchema } from "../runtime/cloudflare/lib/schema.js";
+import { DenoRuntimeGlobalsSchema } from "../runtime/deno/lib/schema.js";
+import { ImportMetaRuntimeGlobalsSchema } from "../runtime/import-meta/lib/schema.js";
+import { NetlifyRuntimeGlobalsSchema } from "../runtime/netlify/lib/schema.js";
+import { NodeRuntimeGlobalsSchema } from "../runtime/node/lib/schema.js";
+import { readRecordEnv } from "../runtime/record/lib/read-record-env.js";
+import { VercelEdgeRuntimeGlobalsSchema } from "../runtime/vercel/lib/schema.js";
 
-import type { RuntimeGlobalsSchemaType } from "../lib/schema.js";
+export const readEnvEffect = (env: string) => {
+  const bunGlobal = parseRuntimeGlobal(BunRuntimeGlobalsSchema);
 
-import { readBrowserEnv } from "../runtime/browser/lib/read-browser-env.js";
-import { readBunEnv } from "../runtime/bun/lib/read-bun-env.js";
-import { readCloudflareEnv } from "../runtime/cloudflare/lib/read-cloudflare-env.js";
-import { readDenoEnv } from "../runtime/deno/lib/read-deno-env.js";
-import { readImportMetaEnv } from "../runtime/import-meta/lib/read-import-meta-env.js";
-import { readNetlifyEnv } from "../runtime/netlify/lib/read-netlify-env.js";
-import { readNodeEnv } from "../runtime/node/lib/read-node-env.js";
-import { readVercelEdgeEnv } from "../runtime/vercel/lib/read-vercel-edge-env.js";
-import { getRuntimeGlobalScopeEffect } from "./get-runtime-global-scope-effect.js";
+  if (bunGlobal?.Bun) {
+    return readRecordEnv(env, bunGlobal.Bun.env);
+  }
 
-type Env = string;
+  if (parseRuntimeGlobal(VercelEdgeRuntimeGlobalsSchema)?.EdgeRuntime) {
+    const nodeGlobal = parseRuntimeGlobal(NodeRuntimeGlobalsSchema);
 
-export const readEnvEffect = (
-  env: Env,
-  runtimeSchema: RuntimeGlobalsSchemaType
-) => {
-  const readEnvEffect = Effect.gen(function* () {
-    const globalScope = yield* getRuntimeGlobalScopeEffect(runtimeSchema);
+    return nodeGlobal?.process
+      ? readRecordEnv(env, nodeGlobal.process.env)
+      : undefined;
+  }
 
-    if (globalScope?.Bun) {
-      return readBunEnv(env);
-    }
+  const netlifyGlobal = parseRuntimeGlobal(NetlifyRuntimeGlobalsSchema);
 
-    if (globalScope?.EdgeRuntime) {
-      return readVercelEdgeEnv(env);
-    }
+  if (netlifyGlobal?.process?.env.NETLIFY) {
+    return readRecordEnv(env, netlifyGlobal.process.env);
+  }
 
-    if (globalScope?.process?.env.NETLIFY) {
-      return readNetlifyEnv(env);
-    }
+  const nodeGlobal = parseRuntimeGlobal(NodeRuntimeGlobalsSchema);
 
-    if (globalScope?.process) {
-      return readNodeEnv(env);
-    }
+  if (nodeGlobal?.process) {
+    return readRecordEnv(env, nodeGlobal.process.env);
+  }
 
-    if (globalScope?.Deno) {
-      return readDenoEnv(env);
-    }
+  const denoGlobal = parseRuntimeGlobal(DenoRuntimeGlobalsSchema);
 
-    if (globalScope?.__CLOUDFLARE_ENV__) {
-      return readCloudflareEnv(env);
-    }
+  if (denoGlobal?.Deno) {
+    return denoGlobal.Deno.env.get(env)?.trim() ?? undefined;
+  }
 
-    if (globalScope?.__IMPORT_META_ENV__) {
-      return readImportMetaEnv(env);
-    }
+  const cloudflareGlobal = parseRuntimeGlobal(CloudflareRuntimeGlobalsSchema);
 
-    if (globalScope?.__APP_CONFIG__ || globalScope?.__ENV__) {
-      return readBrowserEnv(env);
-    }
+  if (cloudflareGlobal?.__CLOUDFLARE_ENV__) {
+    return readRecordEnv(env, cloudflareGlobal.__CLOUDFLARE_ENV__);
+  }
 
-    return undefined;
-  });
+  const importMetaGlobal = parseRuntimeGlobal(ImportMetaRuntimeGlobalsSchema);
 
-  return Effect.runSync(readEnvEffect);
+  if (importMetaGlobal?.__IMPORT_META_ENV__) {
+    return readRecordEnv(env, importMetaGlobal.__IMPORT_META_ENV__);
+  }
+
+  const appConfigGlobal = parseRuntimeGlobal(
+    BrowserAppConfigRuntimeGlobalsSchema
+  );
+
+  if (appConfigGlobal?.__APP_CONFIG__) {
+    return readRecordEnv(env, appConfigGlobal.__APP_CONFIG__);
+  }
+
+  const browserEnvGlobal = parseRuntimeGlobal(BrowserEnvRuntimeGlobalsSchema);
+
+  if (browserEnvGlobal?.__ENV__) {
+    return readRecordEnv(env, browserEnvGlobal.__ENV__);
+  }
+
+  return undefined;
 };
