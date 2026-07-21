@@ -1,6 +1,6 @@
 {
   "name": "@tmrp/env",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Type-safe environment variable parsing, powered by Zod.",
   "keywords": [
     "env",
