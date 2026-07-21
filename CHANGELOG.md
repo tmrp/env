@@ -1,5 +1,13 @@
 # @tmrp/env
 
+## 0.2.1
+
+### Patch Changes
+
+- [`d3b69d3`](https://github.com/tmrp/env/commit/d3b69d3db015b650030f7e10314bfdfeb3ad4139)
+  Thanks [@tmrp](https://github.com/tmrp)! - Bump minor and patch internal
+  dependency versions
+
 ## 0.2.0
 
 ### Minor Changes
