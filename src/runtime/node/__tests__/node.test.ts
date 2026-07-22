@@ -21,7 +21,7 @@ describe("createNodeEnv", () => {
   it("reads process.env", () => {
     useRuntimeGlobals({ process: { env: { NAME: " node " } } });
 
-    expect(createNodeEnv({ NAME: z.string() })).toEqual({ NAME: "node" });
+    expect(createNodeEnv({ NAME: z.string() })).toEqual({ NAME: " node " });
   });
 
   it("throws missing-variable errors when process is unavailable", () => {

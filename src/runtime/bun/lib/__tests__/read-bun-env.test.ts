@@ -20,7 +20,7 @@ describe("readBunEnv", () => {
   it("reads Bun.env", () => {
     useRuntimeGlobals({ Bun: { env: { NAME: " bun " } } });
 
-    expect(readBunEnv("NAME")).toBe("bun");
+    expect(readBunEnv("NAME")).toBe(" bun ");
   });
 
   it("returns undefined for absent or invalid Bun globals", () => {

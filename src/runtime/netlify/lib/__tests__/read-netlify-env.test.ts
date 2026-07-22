@@ -22,7 +22,7 @@ describe("readNetlifyEnv", () => {
       process: { env: { NAME: " netlify ", NETLIFY: "true" } },
     });
 
-    expect(readNetlifyEnv("NAME")).toBe("netlify");
+    expect(readNetlifyEnv("NAME")).toBe(" netlify ");
   });
 
   it("returns undefined for absent, invalid, or non-Netlify process globals", () => {

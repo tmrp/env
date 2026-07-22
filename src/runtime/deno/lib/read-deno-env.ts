@@ -13,5 +13,5 @@ export const readDenoEnv = (env: string) => {
     return undefined;
   }
 
-  return denoRuntimeGlobals.Deno.env?.get?.(env)?.trim() ?? undefined;
+  return denoRuntimeGlobals.Deno.env?.get?.(env) ?? undefined;
 };

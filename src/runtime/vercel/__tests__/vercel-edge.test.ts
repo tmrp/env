@@ -10,7 +10,7 @@ describe("createVercelEdgeEnv", () => {
         { API_URL: z.string(), FEATURE_ENABLED: z.boolean() },
         { API_URL: " https://example.com ", FEATURE_ENABLED: true }
       )
-    ).toEqual({ API_URL: "https://example.com", FEATURE_ENABLED: true });
+    ).toEqual({ API_URL: " https://example.com ", FEATURE_ENABLED: true });
   });
 
   it("passes options through to record validation", () => {

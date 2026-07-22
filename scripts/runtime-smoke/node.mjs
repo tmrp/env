@@ -13,11 +13,11 @@ process.env.RUNTIME_SMOKE_NODE = " node ";
 process.env.RUNTIME_SMOKE_AUTO = " auto ";
 
 assert.deepEqual(createNodeEnv({ RUNTIME_SMOKE_NODE: z.string().min(1) }), {
-  RUNTIME_SMOKE_NODE: "node",
+  RUNTIME_SMOKE_NODE: " node ",
 });
 
 assert.deepEqual(createEnv({ RUNTIME_SMOKE_AUTO: z.string().min(1) }), {
-  RUNTIME_SMOKE_AUTO: "auto",
+  RUNTIME_SMOKE_AUTO: " auto ",
 });
 
 assert.deepEqual(
@@ -27,7 +27,7 @@ assert.deepEqual(
       RUNTIME_SMOKE_RECORD: " record ",
     }
   ),
-  { RUNTIME_SMOKE_RECORD: "record" }
+  { RUNTIME_SMOKE_RECORD: " record " }
 );
 
 assert.deepEqual(
@@ -37,7 +37,7 @@ assert.deepEqual(
       RUNTIME_SMOKE_CLOUDFLARE: " cloudflare ",
     }
   ),
-  { RUNTIME_SMOKE_CLOUDFLARE: "cloudflare" }
+  { RUNTIME_SMOKE_CLOUDFLARE: " cloudflare " }
 );
 
 assert.deepEqual(
@@ -47,7 +47,7 @@ assert.deepEqual(
       RUNTIME_SMOKE_VERCEL: " vercel ",
     }
   ),
-  { RUNTIME_SMOKE_VERCEL: "vercel" }
+  { RUNTIME_SMOKE_VERCEL: " vercel " }
 );
 
 assert.deepEqual(
@@ -57,7 +57,7 @@ assert.deepEqual(
       RUNTIME_SMOKE_NETLIFY: " netlify ",
     }
   ),
-  { RUNTIME_SMOKE_NETLIFY: "netlify" }
+  { RUNTIME_SMOKE_NETLIFY: " netlify " }
 );
 
 assert.deepEqual(
@@ -67,7 +67,7 @@ assert.deepEqual(
       RUNTIME_SMOKE_BROWSER: " browser ",
     }
   ),
-  { RUNTIME_SMOKE_BROWSER: "browser" }
+  { RUNTIME_SMOKE_BROWSER: " browser " }
 );
 
 assert.deepEqual(
@@ -77,5 +77,5 @@ assert.deepEqual(
       RUNTIME_SMOKE_IMPORT_META: " import-meta ",
     }
   ),
-  { RUNTIME_SMOKE_IMPORT_META: "import-meta" }
+  { RUNTIME_SMOKE_IMPORT_META: " import-meta " }
 );

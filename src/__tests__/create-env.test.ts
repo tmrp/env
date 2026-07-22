@@ -21,7 +21,7 @@ describe("createEnv", () => {
   it("reads from the detected runtime and is re-exported from index", () => {
     useRuntimeGlobals({ process: { env: { NAME: " node " } } });
 
-    expect(createEnv({ NAME: z.string() })).toEqual({ NAME: "node" });
+    expect(createEnv({ NAME: z.string() })).toEqual({ NAME: " node " });
   });
 
   it("throws a missing-variable error without a readable runtime", () => {

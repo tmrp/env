@@ -24,19 +24,19 @@ describe("readEnvEffect", () => {
     [
       "Bun before Node",
       { Bun: { env: { NAME: " bun " } }, process: { env: { NAME: "node" } } },
-      "bun",
+      " bun ",
     ],
     [
       "Vercel Edge before Node",
       { EdgeRuntime: "edge", process: { env: { NAME: " edge " } } },
-      "edge",
+      " edge ",
     ],
     [
       "Netlify before Node",
       { process: { env: { NAME: " netlify ", NETLIFY: "true" } } },
-      "netlify",
+      " netlify ",
     ],
-    ["Node", { process: { env: { NAME: " node " } } }, "node"],
+    ["Node", { process: { env: { NAME: " node " } } }, " node "],
     [
       "Deno",
       {
@@ -46,24 +46,24 @@ describe("readEnvEffect", () => {
           },
         },
       },
-      "deno",
+      " deno ",
     ],
     [
       "Cloudflare global shim",
       { __CLOUDFLARE_ENV__: { NAME: " cloudflare " } },
-      "cloudflare",
+      " cloudflare ",
     ],
     [
       "import-meta global shim",
       { __IMPORT_META_ENV__: { NAME: " import-meta " } },
-      "import-meta",
+      " import-meta ",
     ],
     [
       "browser __APP_CONFIG__",
       { __APP_CONFIG__: { NAME: " app-config " } },
-      "app-config",
+      " app-config ",
     ],
-    ["browser __ENV__ fallback", { __ENV__: { NAME: " env " } }, "env"],
+    ["browser __ENV__ fallback", { __ENV__: { NAME: " env " } }, " env "],
   ];
 
   it.each(cases)("reads from %s", (_name, globals, expected) => {
@@ -78,7 +78,7 @@ describe("readEnvEffect", () => {
       process: { env: { NAME: " node " } },
     });
 
-    expect(readEnvEffect("NAME")).toBe("node");
+    expect(readEnvEffect("NAME")).toBe(" node ");
   });
 
   it("continues after a malformed higher-priority runtime candidate", () => {
@@ -87,7 +87,7 @@ describe("readEnvEffect", () => {
       process: { env: { NAME: " node " } },
     });
 
-    expect(readEnvEffect("NAME")).toBe("node");
+    expect(readEnvEffect("NAME")).toBe(" node ");
   });
 
   it("continues when a runtime candidate parser throws", () => {
@@ -98,7 +98,7 @@ describe("readEnvEffect", () => {
         throw new Error("boom");
       });
 
-    expect(readEnvEffect("NAME")).toBe("node");
+    expect(readEnvEffect("NAME")).toBe(" node ");
     safeParse.mockRestore();
   });
 
@@ -111,7 +111,7 @@ describe("readEnvEffect", () => {
       },
     });
 
-    expect(readEnvEffect("NAME")).toBe("env");
+    expect(readEnvEffect("NAME")).toBe(" env ");
   });
 
   it("returns undefined when a selected runtime has no readable value", () => {

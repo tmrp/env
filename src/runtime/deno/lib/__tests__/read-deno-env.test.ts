@@ -24,7 +24,7 @@ describe("readDenoEnv", () => {
       },
     });
 
-    expect(readDenoEnv("NAME")).toBe("deno");
+    expect(readDenoEnv("NAME")).toBe(" deno ");
   });
 
   it("returns undefined for absent, invalid, or missing Deno values", () => {

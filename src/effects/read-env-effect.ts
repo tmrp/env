@@ -42,7 +42,7 @@ export const readEnvEffect = (env: string) => {
   const denoGlobal = parseRuntimeGlobal(DenoRuntimeGlobalsSchema);
 
   if (denoGlobal?.Deno) {
-    return denoGlobal.Deno.env.get(env)?.trim() ?? undefined;
+    return denoGlobal.Deno.env.get(env) ?? undefined;
   }
 
   const cloudflareGlobal = parseRuntimeGlobal(CloudflareRuntimeGlobalsSchema);
