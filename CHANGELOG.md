@@ -1,5 +1,14 @@
 # @tmrp/env
 
+## 0.3.0
+
+### Minor Changes
+
+- [#64](https://github.com/tmrp/env/pull/64)
+  [`3aad125`](https://github.com/tmrp/env/commit/3aad125675f7c7e4160e38d2ad6654c5dea024cf)
+  Thanks [@tmrp](https://github.com/tmrp)! - Avoid trimming value for variables
+  that contain deliberate spaces.
+
 ## 0.2.1
 
 ### Patch Changes
