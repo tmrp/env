@@ -10,6 +10,6 @@ describe("createNetlifyEnv", () => {
         { API_URL: z.string(), NETLIFY: z.string() },
         { API_URL: " https://example.com ", NETLIFY: "true" }
       )
-    ).toEqual({ API_URL: "https://example.com", NETLIFY: "true" });
+    ).toEqual({ API_URL: " https://example.com ", NETLIFY: "true" });
   });
 });

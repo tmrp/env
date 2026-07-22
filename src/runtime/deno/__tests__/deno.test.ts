@@ -25,7 +25,7 @@ describe("createDenoEnv", () => {
       },
     });
 
-    expect(createDenoEnv({ NAME: z.string() })).toEqual({ NAME: "deno" });
+    expect(createDenoEnv({ NAME: z.string() })).toEqual({ NAME: " deno " });
   });
 
   it("throws missing-variable errors when Deno is unavailable", () => {

@@ -20,7 +20,7 @@ describe("readNodeEnv", () => {
   it("reads process.env", () => {
     useRuntimeGlobals({ process: { env: { NAME: " node " } } });
 
-    expect(readNodeEnv("NAME")).toBe("node");
+    expect(readNodeEnv("NAME")).toBe(" node ");
   });
 
   it("returns undefined for absent, invalid, or missing Node values", () => {

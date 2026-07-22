@@ -20,7 +20,7 @@ describe("readImportMetaEnv", () => {
   it("reads the import.meta global shim", () => {
     useRuntimeGlobals({ __IMPORT_META_ENV__: { NAME: " import-meta " } });
 
-    expect(readImportMetaEnv("NAME")).toBe("import-meta");
+    expect(readImportMetaEnv("NAME")).toBe(" import-meta ");
   });
 
   it("returns undefined for absent or invalid import-meta globals", () => {

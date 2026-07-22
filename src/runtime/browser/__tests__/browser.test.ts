@@ -10,6 +10,6 @@ describe("createBrowserEnv", () => {
         { PUBLIC_API_URL: z.string(), PUBLIC_FLAG: z.boolean() },
         { PUBLIC_API_URL: " https://example.com ", PUBLIC_FLAG: true }
       )
-    ).toEqual({ PUBLIC_API_URL: "https://example.com", PUBLIC_FLAG: true });
+    ).toEqual({ PUBLIC_API_URL: " https://example.com ", PUBLIC_FLAG: true });
   });
 });

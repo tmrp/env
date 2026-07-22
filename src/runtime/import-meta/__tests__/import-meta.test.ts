@@ -10,6 +10,6 @@ describe("createImportMetaEnv", () => {
         { DEV: z.boolean(), VITE_API_URL: z.string() },
         { DEV: true, VITE_API_URL: " https://example.com " }
       )
-    ).toEqual({ DEV: true, VITE_API_URL: "https://example.com" });
+    ).toEqual({ DEV: true, VITE_API_URL: " https://example.com " });
   });
 });

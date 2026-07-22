@@ -23,13 +23,13 @@ describe("readBrowserEnv", () => {
       __ENV__: { NAME: " env " },
     });
 
-    expect(readBrowserEnv("NAME")).toBe("app");
+    expect(readBrowserEnv("NAME")).toBe(" app ");
   });
 
   it("reads __ENV__ as a fallback", () => {
     useRuntimeGlobals({ __ENV__: { NAME: " env " } });
 
-    expect(readBrowserEnv("NAME")).toBe("env");
+    expect(readBrowserEnv("NAME")).toBe(" env ");
   });
 
   it("validates browser globals independently", () => {
@@ -37,13 +37,13 @@ describe("readBrowserEnv", () => {
       __APP_CONFIG__: { NAME: " app " },
       __ENV__: "owned by another library",
     });
-    expect(readBrowserEnv("NAME")).toBe("app");
+    expect(readBrowserEnv("NAME")).toBe(" app ");
 
     useRuntimeGlobals({
       __APP_CONFIG__: "owned by another library",
       __ENV__: { NAME: " env " },
     });
-    expect(readBrowserEnv("NAME")).toBe("env");
+    expect(readBrowserEnv("NAME")).toBe(" env ");
   });
 
   it("continues to __ENV__ when reading __APP_CONFIG__ throws", () => {
@@ -55,7 +55,7 @@ describe("readBrowserEnv", () => {
       },
     });
 
-    expect(readBrowserEnv("NAME")).toBe("env");
+    expect(readBrowserEnv("NAME")).toBe(" env ");
   });
 
   it("returns undefined for absent or invalid browser globals", () => {

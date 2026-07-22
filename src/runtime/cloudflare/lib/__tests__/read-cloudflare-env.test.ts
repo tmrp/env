@@ -20,7 +20,7 @@ describe("readCloudflareEnv", () => {
   it("reads the Cloudflare global shim", () => {
     useRuntimeGlobals({ __CLOUDFLARE_ENV__: { NAME: " cloudflare " } });
 
-    expect(readCloudflareEnv("NAME")).toBe("cloudflare");
+    expect(readCloudflareEnv("NAME")).toBe(" cloudflare ");
   });
 
   it("returns undefined for absent or invalid Cloudflare globals", () => {

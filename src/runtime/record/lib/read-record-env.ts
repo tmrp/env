@@ -8,7 +8,7 @@ export const readRecordEnv = (env: string, record: EnvRecord) => {
   const value = (record as Record<string, unknown>)[env];
 
   if (typeof value === "string") {
-    return value.trim();
+    return value;
   }
 
   return value ?? undefined;

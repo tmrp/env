@@ -21,7 +21,7 @@ describe("createBunEnv", () => {
   it("reads Bun.env", () => {
     useRuntimeGlobals({ Bun: { env: { NAME: " bun " } } });
 
-    expect(createBunEnv({ NAME: z.string() })).toEqual({ NAME: "bun" });
+    expect(createBunEnv({ NAME: z.string() })).toEqual({ NAME: " bun " });
   });
 
   it("throws missing-variable errors when Bun is unavailable", () => {

@@ -23,7 +23,7 @@ describe("readVercelEdgeEnv", () => {
       process: { env: { NAME: " vercel-edge " } },
     });
 
-    expect(readVercelEdgeEnv("NAME")).toBe("vercel-edge");
+    expect(readVercelEdgeEnv("NAME")).toBe(" vercel-edge ");
   });
 
   it("returns undefined for absent, invalid, or missing Vercel Edge values", () => {

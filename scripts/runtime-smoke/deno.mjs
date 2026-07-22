@@ -8,5 +8,5 @@ import { createDenoEnv } from "../../dist/runtime/deno/create-deno-env.js";
 Deno.env.set("RUNTIME_SMOKE_DENO", " deno ");
 
 assertEquals(createDenoEnv({ RUNTIME_SMOKE_DENO: z.string().min(1) }), {
-  RUNTIME_SMOKE_DENO: "deno",
+  RUNTIME_SMOKE_DENO: " deno ",
 });

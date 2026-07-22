@@ -4,7 +4,7 @@ import z from "zod";
 import { createRecordEnv } from "../create-record-env.js";
 
 describe("createRecordEnv", () => {
-  it("trims strings, preserves non-strings, and returns inferred values", () => {
+  it("preserves strings, preserves non-strings, and returns inferred values", () => {
     expect(
       createRecordEnv(
         {
@@ -23,7 +23,7 @@ describe("createRecordEnv", () => {
     ).toEqual({
       COUNT: 42,
       ENABLED: false,
-      NAME: "service",
+      NAME: " service ",
       SETTINGS: { nested: true },
     });
   });
