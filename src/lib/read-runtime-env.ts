@@ -1,4 +1,3 @@
-import { parseRuntimeGlobal } from "../lib/parse-runtime-global.js";
 import {
   BrowserAppConfigRuntimeGlobalsSchema,
   BrowserEnvRuntimeGlobalsSchema,
@@ -11,8 +10,9 @@ import { NetlifyRuntimeGlobalsSchema } from "../runtime/netlify/lib/schema.js";
 import { NodeRuntimeGlobalsSchema } from "../runtime/node/lib/schema.js";
 import { readRecordEnv } from "../runtime/record/lib/read-record-env.js";
 import { VercelEdgeRuntimeGlobalsSchema } from "../runtime/vercel/lib/schema.js";
+import { parseRuntimeGlobal } from "./parse-runtime-global.js";
 
-export const readEnvEffect = (env: string) => {
+export const readRuntimeEnv = (env: string): unknown => {
   const bunGlobal = parseRuntimeGlobal(BunRuntimeGlobalsSchema);
 
   if (bunGlobal?.Bun) {

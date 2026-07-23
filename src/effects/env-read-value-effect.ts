@@ -2,24 +2,24 @@ import { Effect } from "effect";
 
 import type { Options } from "../lib/types.js";
 
-type Key = string;
-
-type readRuntimeEnvEffect = (key: Key) => unknown;
-
 export const envReadValueEffect = (
-  key: Key,
-  readRuntimeEnvEffect: readRuntimeEnvEffect,
+  key: string,
+  readRuntimeEnv: (key: string) => unknown,
   options?: Options
-): Effect.Effect<unknown, Error> => {
-  const value = readRuntimeEnvEffect(key);
-
-  if (options?.skipValidation) {
-    return Effect.succeed(value);
-  }
-
-  return Effect.fromNullable(value).pipe(
-    Effect.mapError(
-      () => new Error(`Environment variable "${key}" is not defined`)
+) =>
+  Effect.try({
+    try: () => readRuntimeEnv(key),
+    catch: (error) =>
+      new Error(`Environment variable "${key}" failed to read: ${error}`, {
+        cause: error,
+      }),
+  }).pipe(
+    Effect.flatMap((value) =>
+      options?.skipValidation
+        ? Effect.succeed(value)
+        : Effect.mapError(
+            Effect.fromNullable(value),
+            () => new Error(`Environment variable "${key}" is not defined`)
+          )
     )
   );
-};

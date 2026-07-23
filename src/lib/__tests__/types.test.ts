@@ -33,21 +33,35 @@ describe("creator return types", () => {
     }>();
   });
 
-  it("returns unknown values when validation can be skipped", () => {
+  it("returns inferred schema outputs when validation can be skipped", () => {
     const createSkipped = () =>
       createRecordEnv(schemas, {}, { skipValidation: true });
     const options: Options = {};
     const createWithDynamicOptions = () => createEnv(schemas, options);
 
     expectTypeOf(createSkipped).returns.toEqualTypeOf<{
-      PORT: unknown;
-      PUBLIC_URL: unknown;
-      SECRET: unknown;
+      PORT: number;
+      PUBLIC_URL: string;
+      SECRET: string;
     }>();
     expectTypeOf(createWithDynamicOptions).returns.toEqualTypeOf<{
-      PORT: unknown;
-      PUBLIC_URL: unknown;
-      SECRET: unknown;
+      PORT: number;
+      PUBLIC_URL: string;
+      SECRET: string;
+    }>();
+  });
+
+  it("includes undefined when the skip-validation warning is enabled", () => {
+    const create = () =>
+      createEnv(schemas, {
+        skipValidation: true,
+        debug: { skipValidationWarning: true },
+      });
+
+    expectTypeOf(create).returns.toEqualTypeOf<{
+      PORT: number | undefined;
+      PUBLIC_URL: string | undefined;
+      SECRET: string | undefined;
     }>();
   });
 
@@ -100,9 +114,9 @@ describe("creator return types", () => {
       });
 
     expectTypeOf(create).returns.toEqualTypeOf<{
-      PORT: unknown;
-      PUBLIC_URL: unknown;
-      SECRET: unknown;
+      PORT: number;
+      PUBLIC_URL: string;
+      SECRET: string;
     }>();
   });
 });

@@ -28,6 +28,9 @@ export type EnvRecord = object;
 
 export type Options = {
   clientPrefix?: string;
+  debug?: {
+    skipValidationWarning?: boolean;
+  };
   isServer?: boolean;
   skipValidation?: boolean;
 };
@@ -41,8 +44,26 @@ type OptionValue<
     ? TOptions[TKey]
     : undefined;
 
-type UnvalidatedEnv<TEnvKeys extends EnvKeys> = {
-  [K in keyof TEnvKeys]: unknown;
+type PropertyValue<T, TKey extends PropertyKey> = T extends undefined
+  ? undefined
+  : TKey extends keyof T
+    ? T[TKey]
+    : undefined;
+
+type DebugOptionValue<
+  TOptions extends Options | undefined,
+  TKey extends keyof NonNullable<Options["debug"]>,
+> = PropertyValue<OptionValue<TOptions, "debug">, TKey>;
+
+type UnvalidatedEnv<
+  TEnvKeys extends EnvKeys,
+  TOptions extends Options | undefined,
+> = {
+  [K in keyof TEnvKeys]: undefined extends OptionValue<TOptions, "debug">
+    ? z.infer<TEnvKeys[K]>
+    : true extends DebugOptionValue<TOptions, "skipValidationWarning">
+      ? undefined | z.infer<TEnvKeys[K]>
+      : z.infer<TEnvKeys[K]>;
 };
 
 type UnvalidatedClientEnvForPrefix<
@@ -74,10 +95,10 @@ type EnvForOneOptions<
           string
         > extends infer TPrefix extends string
         ? [TPrefix] extends [never]
-          ? UnvalidatedEnv<TEnvKeys>
+          ? UnvalidatedEnv<TEnvKeys, TOptions>
           : UnvalidatedClientEnv<TEnvKeys, TPrefix>
         : never
-      : UnvalidatedEnv<TEnvKeys>
+      : UnvalidatedEnv<TEnvKeys, TOptions>
     : OptionValue<TOptions, "isServer"> extends true
       ? Env<TEnvKeys>
       : Extract<
