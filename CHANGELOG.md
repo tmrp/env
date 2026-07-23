@@ -1,5 +1,13 @@
 # @tmrp/env
 
+## 0.4.0
+
+### Minor Changes
+
+- [#67](https://github.com/tmrp/env/pull/67)
+  [`1aba18d`](https://github.com/tmrp/env/commit/1aba18d21bd6587c95b5c6c8bb061f2407c06e0f)
+  Thanks [@tmrp](https://github.com/tmrp)! - refactor validation
+
 ## 0.3.0
 
 ### Minor Changes
