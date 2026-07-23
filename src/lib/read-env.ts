@@ -4,8 +4,7 @@ import { readRuntimeEnv } from "./read-runtime-env.js";
  * Reads an environment variable from the current runtime.
  *
  * The function checks known runtime globals and explicit global env records.
- * When a string value is found, surrounding whitespace is trimmed before it is
- * returned.
+ * Values are returned as-is; surrounding whitespace is not trimmed.
  *
  * @example
  * 	const apiBaseUrl = readEnv("API_BASE_URL");
@@ -13,8 +12,8 @@ import { readRuntimeEnv } from "./read-runtime-env.js";
  * 	fetch(`${apiBaseUrl}/health`);
  *
  * @param env The name of the environment variable to read.
- * @returns The trimmed environment variable value, or `undefined` when the
- *   variable is not defined in the current runtime.
+ * @returns The environment variable value, or `undefined` when the variable is
+ *   not defined in the current runtime.
  */
 
 export const readEnv = (env: string) => {
