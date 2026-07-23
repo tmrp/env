@@ -1,26 +1,70 @@
+<div align="center">
+
 # @tmrp/env
 
-Type-safe environment variable parsing for TypeScript projects, powered by
-[Zod](https://zod.dev/).
+### Type-safe environment variables for TypeScript — validated with [Zod](https://zod.dev/), everywhere your code runs.
+
+[![npm version](https://img.shields.io/npm/v/@tmrp/env?color=%230b7285&label=npm)](https://www.npmjs.com/package/@tmrp/env)
+[![npm downloads](https://img.shields.io/npm/dm/@tmrp/env?color=%230b7285)](https://www.npmjs.com/package/@tmrp/env)
+[![CI](https://github.com/tmrp/env/actions/workflows/ci.yml/badge.svg)](https://github.com/tmrp/env/actions/workflows/ci.yml)
+[![minzipped size](https://img.shields.io/bundlephobia/minzip/@tmrp/env?color=%230b7285)](https://bundlephobia.com/package/@tmrp/env)
+[![License: MIT](https://img.shields.io/npm/l/@tmrp/env?color=%230b7285)](./LICENSE)
+![Types included](https://img.shields.io/badge/types-included-%230b7285)
+
+</div>
+
+---
 
 `@tmrp/env` reads environment variables from the current runtime or an explicit
 env-like object, validates them with Zod schemas, and returns a strongly typed
-object for application code. It supports Node.js, Deno, Bun, Cloudflare Workers,
-Vercel Edge, Netlify, browser-injected config, and `import.meta.env`-based
-toolchains.
+object for application code. It supports **Node.js, Deno, Bun, Cloudflare
+Workers, Vercel Edge, Netlify**, browser-injected config, and
+`import.meta.env`-based toolchains.
+
+```ts
+import { createEnv } from "@tmrp/env";
+import z from "zod";
+
+export const env = createEnv({
+  API_URL: z.url(),
+  NODE_ENV: z.enum(["development", "test", "production"]),
+  PORT: z.coerce.number().int().positive(),
+});
+
+env.API_URL; // string  ✅ fully typed
+env.PORT; //    number  ✅ validated at startup
+```
+
+## Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Runtime Entry Points](#runtime-entry-points)
+- [Runtime Usage](#runtime-usage)
+- [Defining Schemas](#defining-schemas)
+- [Required Values](#required-values)
+- [Skipping Validation](#skipping-validation)
+- [Error Behavior](#error-behavior)
+- [Example `.env`](#example-env)
+- [API Reference](#api-reference)
+- [Development](#development)
+- [Project Structure](#project-structure)
+- [Notes And Limitations](#notes-and-limitations)
+- [License](#license)
 
 ## Features
 
-- Validate environment variables with any Zod schema.
-- Infer TypeScript types from your schema definitions.
-- Fail fast when required environment variables are missing.
-- Skip validation for build or CI steps where runtime env vars are unavailable.
-- Trim string values before validation.
-- Support Node.js `process.env`, Deno `Deno.env.get`, Bun `Bun.env`, and known
-  global env records.
-- Validate explicit env records for edge runtimes, serverless bindings, browser
-  config, and `import.meta.env`.
-- Use runtime-specific entry points when you know the target runtime.
+- ✅ Validate environment variables with any Zod schema.
+- 🧠 Infer TypeScript types directly from your schema definitions.
+- 💥 Fail fast when required environment variables are missing.
+- 🏗️ Skip validation for build or CI steps where runtime env vars are
+  unavailable.
+- 🌍 Support Node.js `process.env`, Deno `Deno.env.get`, Bun `Bun.env`, and
+  known global env records.
+- 🔌 Validate explicit env records for edge runtimes, serverless bindings,
+  browser config, and `import.meta.env`.
+- 🎯 Use runtime-specific entry points when you know the target runtime.
 
 ## Installation
 
@@ -179,9 +223,9 @@ const env = createRecordEnv(
 );
 ```
 
-String values are trimmed before validation. Non-string values are passed
-directly to Zod, which is useful for framework-provided booleans or platform
-bindings.
+Values are passed to Zod as-is: string values keep their surrounding whitespace,
+and non-string values are passed directly, which is useful for
+framework-provided booleans or platform bindings.
 
 ### Cloudflare Workers
 
@@ -588,7 +632,7 @@ src/
   create-env.ts                         Default runtime-aware environment creator
   index.ts                              Default public export
   effects/                              Internal Effect-based read and parse pipeline
-  lib/                                  Shared schemas and types
+  lib/                                  Shared schemas, types, and runtime reader
   runtime/
     browser/                            Browser config entry point
     bun/                                Bun-specific entry point and reader
@@ -603,7 +647,7 @@ src/
 
 ## Notes And Limitations
 
-- Values from strings are trimmed before validation.
+- String values are passed to Zod as-is; surrounding whitespace is not trimmed.
 - Reads are synchronous.
 - The package validates configuration at creation time, not lazily.
 - Runtime global values are usually strings; explicit records can also pass
@@ -616,4 +660,4 @@ src/
 
 ## License
 
-MIT
+[MIT](./LICENSE) </content> </invoke>

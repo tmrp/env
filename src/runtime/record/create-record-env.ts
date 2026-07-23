@@ -15,8 +15,8 @@ import { readRecordEnv } from "./lib/read-record-env.js";
  * Creates a typed environment object from any explicit object.
  *
  * Use this when environment values are passed to your code rather than exposed
- * through a runtime global. String values are trimmed before validation;
- * non-string values are passed directly to Zod.
+ * through a runtime global. Values are passed to Zod as-is: string values keep
+ * their surrounding whitespace, and non-string values are passed directly.
  *
  * @example
  * ```ts
