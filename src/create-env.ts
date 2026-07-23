@@ -1,7 +1,7 @@
 import type { EnvKeys, Options } from "./lib/types.js";
 
 import { createEnvEffect } from "./effects/create-env-effect.js";
-import { readEnvEffect } from "./effects/read-env-effect.js";
+import { readRuntimeEnv } from "./lib/read-runtime-env.js";
 
 /**
  * Creates a typed environment object from the currently available runtime.
@@ -37,7 +37,7 @@ import { readEnvEffect } from "./effects/read-env-effect.js";
  */
 export function createEnv<
   const TEnvKeys extends EnvKeys,
-  const TOptions extends Options | undefined = undefined,
+  const TOptions extends Options | undefined,
 >(envKeys: TEnvKeys, options?: TOptions) {
-  return createEnvEffect(envKeys, readEnvEffect, options);
+  return createEnvEffect(envKeys, readRuntimeEnv, options);
 }

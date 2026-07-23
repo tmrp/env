@@ -20,4 +20,14 @@ describe("envReadValueEffect", () => {
       )
     ).toBeUndefined();
   });
+
+  it("wraps errors thrown while reading the value", () => {
+    expect(() =>
+      Effect.runSync(
+        envReadValueEffect("NAME", () => {
+          throw new Error("PermissionDenied");
+        })
+      )
+    ).toThrow('Environment variable "NAME" failed to read');
+  });
 });

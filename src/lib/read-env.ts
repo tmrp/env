@@ -1,4 +1,4 @@
-import { readEnvEffect } from "../effects/read-env-effect.js";
+import { readRuntimeEnv } from "./read-runtime-env.js";
 
 /**
  * Reads an environment variable from the current runtime.
@@ -18,5 +18,5 @@ import { readEnvEffect } from "../effects/read-env-effect.js";
  */
 
 export const readEnv = (env: string) => {
-  return readEnvEffect(env);
+  return readRuntimeEnv(env);
 };

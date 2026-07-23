@@ -6,8 +6,8 @@ import {
   saveRuntimeGlobals,
   useRuntimeGlobals,
 } from "../../__tests__/runtime-globals.js";
+import { readRuntimeEnv } from "../../lib/read-runtime-env.js";
 import { BunRuntimeGlobalsSchema } from "../../runtime/bun/lib/schema.js";
-import { readEnvEffect } from "../read-env-effect.js";
 
 beforeAll(() => {
   saveRuntimeGlobals();
@@ -17,7 +17,7 @@ afterEach(() => {
   restoreRuntimeGlobals();
 });
 
-describe("readEnvEffect", () => {
+describe("readRuntimeEnv", () => {
   const cases: Array<
     [string, Parameters<typeof useRuntimeGlobals>[0], string]
   > = [
@@ -69,7 +69,7 @@ describe("readEnvEffect", () => {
   it.each(cases)("reads from %s", (_name, globals, expected) => {
     useRuntimeGlobals(globals);
 
-    expect(readEnvEffect("NAME")).toBe(expected);
+    expect(readRuntimeEnv("NAME")).toBe(expected);
   });
 
   it("ignores malformed globals from unrelated runtimes", () => {
@@ -78,7 +78,7 @@ describe("readEnvEffect", () => {
       process: { env: { NAME: " node " } },
     });
 
-    expect(readEnvEffect("NAME")).toBe(" node ");
+    expect(readRuntimeEnv("NAME")).toBe(" node ");
   });
 
   it("continues after a malformed higher-priority runtime candidate", () => {
@@ -87,7 +87,7 @@ describe("readEnvEffect", () => {
       process: { env: { NAME: " node " } },
     });
 
-    expect(readEnvEffect("NAME")).toBe(" node ");
+    expect(readRuntimeEnv("NAME")).toBe(" node ");
   });
 
   it("continues when a runtime candidate parser throws", () => {
@@ -98,7 +98,7 @@ describe("readEnvEffect", () => {
         throw new Error("boom");
       });
 
-    expect(readEnvEffect("NAME")).toBe(" node ");
+    expect(readRuntimeEnv("NAME")).toBe(" node ");
     safeParse.mockRestore();
   });
 
@@ -111,22 +111,36 @@ describe("readEnvEffect", () => {
       },
     });
 
-    expect(readEnvEffect("NAME")).toBe(" env ");
+    expect(readRuntimeEnv("NAME")).toBe(" env ");
+  });
+
+  it("throws when reading the selected runtime throws", () => {
+    useRuntimeGlobals({
+      Deno: {
+        env: {
+          get: () => {
+            throw new Error("PermissionDenied");
+          },
+        },
+      },
+    });
+
+    expect(() => readRuntimeEnv("NAME")).toThrow("PermissionDenied");
   });
 
   it("returns undefined when a selected runtime has no readable value", () => {
     useRuntimeGlobals({ EdgeRuntime: "edge" });
-    expect(readEnvEffect("NAME")).toBeUndefined();
+    expect(readRuntimeEnv("NAME")).toBeUndefined();
 
     useRuntimeGlobals({
       Deno: { env: { get: () => undefined } },
     });
-    expect(readEnvEffect("NAME")).toBeUndefined();
+    expect(readRuntimeEnv("NAME")).toBeUndefined();
   });
 
   it("returns undefined without a readable runtime", () => {
     clearRuntimeGlobals();
 
-    expect(readEnvEffect("NAME")).toBeUndefined();
+    expect(readRuntimeEnv("NAME")).toBeUndefined();
   });
 });
