@@ -13,6 +13,7 @@ export default defineConfig([
       "out/**",
       "build/**",
       "/coverage/**",
+      "playground/**",
     ],
   },
   ...eslintPerfectionistConfig,
