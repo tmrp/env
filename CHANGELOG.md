@@ -1,5 +1,12 @@
 # @tmrp/env
 
+## 0.4.1
+
+### Patch Changes
+
+- [`ab4a1c2`](https://github.com/tmrp/env/commit/ab4a1c2f87cc0ae9b2049915239648af846aef18)
+  Thanks [@tmrp](https://github.com/tmrp)! - update jsdoc
+
 ## 0.4.0
 
 ### Minor Changes
