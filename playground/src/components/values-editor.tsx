@@ -1,7 +1,13 @@
+import { useState } from "react";
+
+import { FileTextIcon } from "lucide-react";
+
 import type { EnvKeyRow, SchemaSpec } from "../lib/schema-spec";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -9,7 +15,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-import { parseEnumValues } from "../lib/schema-spec";
+import { defaultSpecForKind, parseEnumValues } from "../lib/schema-spec";
+import { loadDotEnv } from "../lib/server";
 
 const placeholderFor = (spec: SchemaSpec): string => {
   switch (spec.kind) {
@@ -26,17 +33,75 @@ const placeholderFor = (spec: SchemaSpec): string => {
   }
 };
 
+type LoadStatus = { message: string; status: "error" | "success" };
+
 type ValuesEditorProps = {
+  onRowsChange: (rows: Array<EnvKeyRow>) => void;
   onValuesChange: (values: Record<string, string>) => void;
   rows: Array<EnvKeyRow>;
   values: Record<string, string>;
 };
 
 export function ValuesEditor({
+  onRowsChange,
   onValuesChange,
   rows,
   values,
 }: ValuesEditorProps) {
+  const [loading, setLoading] = useState(false);
+  const [loadStatus, setLoadStatus] = useState<LoadStatus | undefined>(
+    undefined
+  );
+
+  const loadFromDotEnv = async () => {
+    setLoading(true);
+    setLoadStatus(undefined);
+    try {
+      const result = await loadDotEnv();
+      if (result.status === "error") {
+        setLoadStatus(result);
+        return;
+      }
+
+      const rowByKey = new Map(
+        rows
+          .filter((row) => row.key.trim() !== "")
+          .map((row) => [row.key.trim(), row])
+      );
+      const nextRows = [...rows];
+      const nextValues = { ...values };
+      let matched = 0;
+      let added = 0;
+
+      for (const [key, value] of Object.entries(result.values)) {
+        const existing = rowByKey.get(key);
+        if (existing === undefined) {
+          const id = crypto.randomUUID();
+          nextRows.push({ id, key, spec: defaultSpecForKind("string") });
+          nextValues[id] = value;
+          added += 1;
+        } else {
+          nextValues[existing.id] = value;
+          matched += 1;
+        }
+      }
+
+      onRowsChange(nextRows);
+      onValuesChange(nextValues);
+      setLoadStatus({
+        message: `Loaded ${Object.keys(result.values).length} variable(s) from ${result.path} — ${matched} matched the schema, ${added} added as string rows.`,
+        status: "success",
+      });
+    } catch (error) {
+      setLoadStatus({
+        message: error instanceof Error ? error.message : String(error),
+        status: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const namedRows = rows.filter((row) => row.key.trim() !== "");
 
   return (
@@ -46,6 +111,17 @@ export function ValuesEditor({
         <CardDescription>
           Raw strings; an empty input counts as missing.
         </CardDescription>
+        <CardAction>
+          <Button
+            disabled={loading}
+            onClick={loadFromDotEnv}
+            size="sm"
+            variant="outline"
+          >
+            <FileTextIcon />
+            {loading ? "Loading…" : "Load .env"}
+          </Button>
+        </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col">
         {namedRows.length === 0 ? (
@@ -77,6 +153,17 @@ export function ValuesEditor({
               />
             </div>
           ))
+        )}
+        {loadStatus === undefined ? null : (
+          <p
+            className={
+              loadStatus.status === "error"
+                ? "pt-3 text-xs text-destructive"
+                : "pt-3 text-xs text-muted-foreground"
+            }
+          >
+            {loadStatus.message}
+          </p>
         )}
       </CardContent>
     </Card>
