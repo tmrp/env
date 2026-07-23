@@ -94,6 +94,7 @@ export function Playground() {
         </div>
         <div className="flex flex-col gap-4">
           <ValuesEditor
+            onRowsChange={setRows}
             onValuesChange={setValues}
             rows={rows}
             values={values}
