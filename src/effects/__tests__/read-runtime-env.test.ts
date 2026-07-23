@@ -6,8 +6,8 @@ import {
   saveRuntimeGlobals,
   useRuntimeGlobals,
 } from "../../__tests__/runtime-globals.js";
-import { BunRuntimeGlobalsSchema } from "../../runtime/bun/lib/schema.js";
 import { readRuntimeEnv } from "../../lib/read-runtime-env.js";
+import { BunRuntimeGlobalsSchema } from "../../runtime/bun/lib/schema.js";
 
 beforeAll(() => {
   saveRuntimeGlobals();
