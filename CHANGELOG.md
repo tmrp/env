@@ -1,5 +1,12 @@
 # @tmrp/env
 
+## 0.4.2
+
+### Patch Changes
+
+- [`3d14938`](https://github.com/tmrp/env/commit/3d1493885bf53193f868e1f6652062043efd5159)
+  Thanks [@tmrp](https://github.com/tmrp)! - Update internal dependencies
+
 ## 0.4.1
 
 ### Patch Changes
