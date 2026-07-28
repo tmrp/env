@@ -11,8 +11,8 @@ type ClientEnvForPrefix<
   [K in keyof TEnvKeys]: string extends TClientPrefix
     ? undefined | z.infer<TEnvKeys[K]>
     : K extends `${TClientPrefix}${string}`
-      ? z.infer<TEnvKeys[K]>
-      : undefined | z.infer<TEnvKeys[K]>;
+      ? undefined | z.infer<TEnvKeys[K]>
+      : z.infer<TEnvKeys[K]>;
 };
 
 type ClientEnv<
@@ -66,22 +66,11 @@ type UnvalidatedEnv<
       : z.infer<TEnvKeys[K]>;
 };
 
-type UnvalidatedClientEnvForPrefix<
-  TEnvKeys extends EnvKeys,
-  TClientPrefix extends string,
-> = {
-  [K in keyof TEnvKeys]: string extends TClientPrefix
-    ? unknown
-    : K extends `${TClientPrefix}${string}`
-      ? unknown
-      : undefined;
-};
-
 type UnvalidatedClientEnv<
   TEnvKeys extends EnvKeys,
   TClientPrefix extends string,
 > = TClientPrefix extends string
-  ? UnvalidatedClientEnvForPrefix<TEnvKeys, TClientPrefix>
+  ? ClientEnvForPrefix<TEnvKeys, TClientPrefix>
   : never;
 
 type EnvForOneOptions<

@@ -65,7 +65,7 @@ describe("creator return types", () => {
     }>();
   });
 
-  it("includes undefined for values filtered on the client", () => {
+  it("includes undefined for prefixed values on the client", () => {
     const create = () =>
       createEnv(schemas, {
         clientPrefix: "PUBLIC_",
@@ -73,9 +73,9 @@ describe("creator return types", () => {
       });
 
     expectTypeOf(create).returns.toEqualTypeOf<{
-      PORT: number | undefined;
-      PUBLIC_URL: string;
-      SECRET: string | undefined;
+      PORT: number;
+      PUBLIC_URL: string | undefined;
+      SECRET: string;
     }>();
   });
 
@@ -100,9 +100,9 @@ describe("creator return types", () => {
       });
 
     expectTypeOf(create).returns.toEqualTypeOf<{
-      PORT: undefined;
-      PUBLIC_URL: unknown;
-      SECRET: undefined;
+      PORT: number;
+      PUBLIC_URL: string | undefined;
+      SECRET: string;
     }>();
   });
 
