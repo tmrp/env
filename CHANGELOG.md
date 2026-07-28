@@ -1,5 +1,14 @@
 # @tmrp/env
 
+## 0.4.3
+
+### Patch Changes
+
+- [#74](https://github.com/tmrp/env/pull/74)
+  [`c107898`](https://github.com/tmrp/env/commit/c1078988e6c1d7348f350dbbf8ef0a14405c2aec)
+  Thanks [@tmrp](https://github.com/tmrp)! - Client prefix types now return as
+  schema value or undefined
+
 ## 0.4.2
 
 ### Patch Changes
