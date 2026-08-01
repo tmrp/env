@@ -1,5 +1,17 @@
 # @tmrp/env
 
+## 0.5.0
+
+### Minor Changes
+
+- [#79](https://github.com/tmrp/env/pull/79)
+  [`83ac2c0`](https://github.com/tmrp/env/commit/83ac2c07239683339ef84bb7c63f403caeff71ab)
+  Thanks [@tmrp](https://github.com/tmrp)! - Correct return types so they match
+  runtime behavior. Values returned while validation is skipped are now typed as
+  `unknown`, because parsing, coercion, defaults, and transforms do not run.
+  Client-prefix filtering now types exposed keys as parsed values and filtered
+  server-only keys as `undefined`.
+
 ## 0.4.3
 
 ### Patch Changes
