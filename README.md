@@ -35,12 +35,6 @@ env.API_URL; // string  ✅ fully typed
 env.PORT; //    number  ✅ validated at startup
 ```
 
-> **Need help outside this package?** I offer a €250 fixed-scope repair for one
-> reproducible bug in a public TypeScript or React repository: an agreed
-> acceptance test, a patch with relevant automated tests, a draft pull request,
-> and one revision. [Submit a public request](https://github.com/tmrp/tmrp/issues/new?template=fixed-scope.yml&title=%5BRepair%20request%20via%20%40tmrp%2Fenv%5D%3A%20).
-> Requests are reviewed before acceptance; no payment is due on submission.
-
 ## Contents
 
 - [Features](#features)
