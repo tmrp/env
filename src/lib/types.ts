@@ -11,8 +11,8 @@ type ClientEnvForPrefix<
   [K in keyof TEnvKeys]: string extends TClientPrefix
     ? undefined | z.infer<TEnvKeys[K]>
     : K extends `${TClientPrefix}${string}`
-      ? undefined | z.infer<TEnvKeys[K]>
-      : z.infer<TEnvKeys[K]>;
+      ? z.infer<TEnvKeys[K]>
+      : undefined;
 };
 
 type ClientEnv<
@@ -28,6 +28,10 @@ export type EnvRecord = object;
 
 export type Options = {
   clientPrefix?: string;
+  /**
+   * @deprecated Skip-validation results are always typed as unknown because
+   * validation, coercion, transforms, and defaults do not run.
+   */
   debug?: {
     skipValidationWarning?: boolean;
   };
@@ -44,33 +48,26 @@ type OptionValue<
     ? TOptions[TKey]
     : undefined;
 
-type PropertyValue<T, TKey extends PropertyKey> = T extends undefined
-  ? undefined
-  : TKey extends keyof T
-    ? T[TKey]
-    : undefined;
+type UnvalidatedEnv<TEnvKeys extends EnvKeys> = {
+  [K in keyof TEnvKeys]: unknown;
+};
 
-type DebugOptionValue<
-  TOptions extends Options | undefined,
-  TKey extends keyof NonNullable<Options["debug"]>,
-> = PropertyValue<OptionValue<TOptions, "debug">, TKey>;
-
-type UnvalidatedEnv<
+type UnvalidatedClientEnvForPrefix<
   TEnvKeys extends EnvKeys,
-  TOptions extends Options | undefined,
+  TClientPrefix extends string,
 > = {
-  [K in keyof TEnvKeys]: undefined extends OptionValue<TOptions, "debug">
-    ? z.infer<TEnvKeys[K]>
-    : true extends DebugOptionValue<TOptions, "skipValidationWarning">
-      ? undefined | z.infer<TEnvKeys[K]>
-      : z.infer<TEnvKeys[K]>;
+  [K in keyof TEnvKeys]: string extends TClientPrefix
+    ? unknown
+    : K extends `${TClientPrefix}${string}`
+      ? unknown
+      : undefined;
 };
 
 type UnvalidatedClientEnv<
   TEnvKeys extends EnvKeys,
   TClientPrefix extends string,
 > = TClientPrefix extends string
-  ? ClientEnvForPrefix<TEnvKeys, TClientPrefix>
+  ? UnvalidatedClientEnvForPrefix<TEnvKeys, TClientPrefix>
   : never;
 
 type EnvForOneOptions<
@@ -84,10 +81,10 @@ type EnvForOneOptions<
           string
         > extends infer TPrefix extends string
         ? [TPrefix] extends [never]
-          ? UnvalidatedEnv<TEnvKeys, TOptions>
+          ? UnvalidatedEnv<TEnvKeys>
           : UnvalidatedClientEnv<TEnvKeys, TPrefix>
         : never
-      : UnvalidatedEnv<TEnvKeys, TOptions>
+      : UnvalidatedEnv<TEnvKeys>
     : OptionValue<TOptions, "isServer"> extends true
       ? Env<TEnvKeys>
       : Extract<

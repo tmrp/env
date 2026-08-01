@@ -33,25 +33,25 @@ describe("creator return types", () => {
     }>();
   });
 
-  it("returns inferred schema outputs when validation can be skipped", () => {
+  it("returns unknown raw values when validation can be skipped", () => {
     const createSkipped = () =>
       createRecordEnv(schemas, {}, { skipValidation: true });
     const options: Options = {};
     const createWithDynamicOptions = () => createEnv(schemas, options);
 
     expectTypeOf(createSkipped).returns.toEqualTypeOf<{
-      PORT: number;
-      PUBLIC_URL: string;
-      SECRET: string;
+      PORT: unknown;
+      PUBLIC_URL: unknown;
+      SECRET: unknown;
     }>();
     expectTypeOf(createWithDynamicOptions).returns.toEqualTypeOf<{
-      PORT: number;
-      PUBLIC_URL: string;
-      SECRET: string;
+      PORT: unknown;
+      PUBLIC_URL: unknown;
+      SECRET: unknown;
     }>();
   });
 
-  it("includes undefined when the skip-validation warning is enabled", () => {
+  it("keeps legacy debug options type-safe when validation is skipped", () => {
     const create = () =>
       createEnv(schemas, {
         skipValidation: true,
@@ -59,13 +59,13 @@ describe("creator return types", () => {
       });
 
     expectTypeOf(create).returns.toEqualTypeOf<{
-      PORT: number | undefined;
-      PUBLIC_URL: string | undefined;
-      SECRET: string | undefined;
+      PORT: unknown;
+      PUBLIC_URL: unknown;
+      SECRET: unknown;
     }>();
   });
 
-  it("includes undefined for prefixed values on the client", () => {
+  it("includes only prefixed values on the client", () => {
     const create = () =>
       createEnv(schemas, {
         clientPrefix: "PUBLIC_",
@@ -73,9 +73,9 @@ describe("creator return types", () => {
       });
 
     expectTypeOf(create).returns.toEqualTypeOf<{
-      PORT: number;
-      PUBLIC_URL: string | undefined;
-      SECRET: string;
+      PORT: undefined;
+      PUBLIC_URL: string;
+      SECRET: undefined;
     }>();
   });
 
@@ -100,9 +100,9 @@ describe("creator return types", () => {
       });
 
     expectTypeOf(create).returns.toEqualTypeOf<{
-      PORT: number;
-      PUBLIC_URL: string | undefined;
-      SECRET: string;
+      PORT: undefined;
+      PUBLIC_URL: unknown;
+      SECRET: undefined;
     }>();
   });
 
@@ -114,9 +114,9 @@ describe("creator return types", () => {
       });
 
     expectTypeOf(create).returns.toEqualTypeOf<{
-      PORT: number;
-      PUBLIC_URL: string;
-      SECRET: string;
+      PORT: unknown;
+      PUBLIC_URL: unknown;
+      SECRET: unknown;
     }>();
   });
 });
