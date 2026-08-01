@@ -1,5 +1,14 @@
 # @tmrp/env
 
+## 0.5.1
+
+### Patch Changes
+
+- [#81](https://github.com/tmrp/env/pull/81)
+  [`2423f19`](https://github.com/tmrp/env/commit/2423f19305a86422d7f8d205db9a972cb5e3883d)
+  Thanks [@tmrp](https://github.com/tmrp)! - Remove the fixed-scope repair offer
+  from the package documentation.
+
 ## 0.5.0
 
 ### Minor Changes
