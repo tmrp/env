@@ -1,5 +1,12 @@
 # @tmrp/env
 
+## 0.5.2
+
+### Patch Changes
+
+- [`bdb8081`](https://github.com/tmrp/env/commit/bdb80810484e5e6ccd12d0d4e9165753669c7ad6)
+  Thanks [@tmrp](https://github.com/tmrp)! - Update internal dependencies
+
 ## 0.5.1
 
 ### Patch Changes
