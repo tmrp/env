@@ -79,6 +79,7 @@
     "clean": "rm -rf dist",
     "format": "prettier --write .",
     "lint": "eslint .",
+    "playground": "pnpm --filter @tmrp/env-playground dev",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:runtime": "pnpm test:runtime:node && pnpm test:runtime:bun && pnpm test:runtime:deno",
