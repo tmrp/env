@@ -1,5 +1,16 @@
 # @tmrp/env
 
+## 0.6.0
+
+### Minor Changes
+
+- [#99](https://github.com/tmrp/env/pull/99)
+  [`23fcae5`](https://github.com/tmrp/env/commit/23fcae5d57ebfda6b36ab3dd60c1ce0b05165c4f)
+  Thanks [@tmrp](https://github.com/tmrp)! - Delegate missing and null value
+  semantics to Zod. Missing values now reach the configured schema as
+  `undefined`, enabling optional and defaulted schemas, while explicit `null`
+  values work with nullable schemas in record-based runtimes.
+
 ## 0.5.4
 
 ### Patch Changes
