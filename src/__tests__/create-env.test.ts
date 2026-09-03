@@ -32,6 +32,17 @@ describe("createEnv", () => {
     );
   });
 
+  it("lets schemas handle missing variables", () => {
+    clearRuntimeGlobals();
+
+    expect(
+      createEnv({
+        OPTIONAL: z.string().optional(),
+        WITH_DEFAULT: z.string().default("fallback"),
+      })
+    ).toEqual({ OPTIONAL: undefined, WITH_DEFAULT: "fallback" });
+  });
+
   it("allows missing variables when validation is skipped", () => {
     clearRuntimeGlobals();
 

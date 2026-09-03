@@ -93,9 +93,9 @@ env.API_URL; // string
 env.PORT; // number
 ```
 
-If a variable is missing or does not match its schema, `createEnv` throws during
-initialization. This makes configuration problems visible at startup instead of
-later in application code.
+If a value does not match its schema, `createEnv` throws during initialization.
+Required variables therefore fail fast when missing, while optional and
+defaulted schemas retain their normal Zod behavior.
 
 ## Runtime Entry Points
 
@@ -381,27 +381,23 @@ record-based entry points can also pass non-string values directly to Zod.
 
 ## Required Values
 
-All configured variables must exist in the runtime environment. Missing
-variables fail before Zod validation runs, so Zod `.optional()` and `.default()`
-schemas do not currently make an absent variable valid.
+Missing variables are passed to Zod as `undefined`, so the schema determines
+whether each value is required, optional, or defaulted.
 
 ```ts
 const env = createEnv({
   REQUIRED_TOKEN: z.string().min(1),
-  LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]),
+  OPTIONAL_TOKEN: z.string().optional(),
+  LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
 });
 ```
 
-If you need defaults, define them in the runtime environment before calling
-`createEnv`:
+If `REQUIRED_TOKEN` is missing, creation fails immediately. The other two
+variables can be omitted: `OPTIONAL_TOKEN` becomes `undefined` and `LOG_LEVEL`
+becomes `"info"`.
 
-```ts
-process.env.LOG_LEVEL ??= "info";
-
-const env = createEnv({
-  LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]),
-});
-```
+Explicit record-based runtimes also pass `null` through to Zod, allowing schemas
+such as `z.string().nullable()` to handle it.
 
 ## Skipping Validation
 
@@ -449,7 +445,7 @@ configuration.
 
 All creators run synchronously and throw on failure.
 
-Missing variable error:
+Missing required variable error:
 
 ```txt
 Environment variable "DATABASE_URL" is not defined
@@ -461,9 +457,9 @@ Validation error:
 Environment variable "PORT" failed validation: ...
 ```
 
-This behavior is intentional: configuration errors should fail application
-startup immediately. When `skipValidation` is enabled, missing and invalid
-values do not throw.
+Configuration that does not satisfy its schema fails application startup.
+Missing optional or defaulted variables are valid, according to their schemas.
+When `skipValidation` is enabled, missing and invalid values do not throw.
 
 ## Example `.env`
 
@@ -652,8 +648,8 @@ src/
 - The package validates configuration at creation time, not lazily.
 - Runtime global values are usually strings; explicit records can also pass
   non-string values to Zod.
-- Missing environment variables currently fail before Zod defaults can be
-  applied.
+- Missing environment variables are passed to Zod as `undefined`, allowing
+  optional and defaulted schemas to handle them.
 - Browser and build-tool entry points validate values you explicitly pass to
   them. The default reader can also use the documented global records when your
   application intentionally exposes them.

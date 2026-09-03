@@ -9,4 +9,16 @@ describe("createEnvEffect", () => {
       createEnvEffect({ NAME: z.string() }, (key) => ` ${key.toLowerCase()} `)
     ).toEqual({ NAME: " name " });
   });
+
+  it("lets schemas handle values missing from the runtime", () => {
+    expect(
+      createEnvEffect(
+        {
+          OPTIONAL: z.string().optional(),
+          WITH_DEFAULT: z.string().default("fallback"),
+        },
+        () => undefined
+      )
+    ).toEqual({ OPTIONAL: undefined, WITH_DEFAULT: "fallback" });
+  });
 });

@@ -3,12 +3,12 @@ import { describe, expect, it } from "vitest";
 import { readRecordEnv } from "../read-record-env.js";
 
 describe("readRecordEnv", () => {
-  it("reads records without trimming, with passthrough values, and nullish misses", () => {
+  it("reads records without trimming and preserves passthrough values", () => {
     expect(readRecordEnv("NAME", { NAME: " value " })).toBe(" value ");
     expect(readRecordEnv("ENABLED", { ENABLED: false })).toBe(false);
     expect(readRecordEnv("COUNT", { COUNT: 0 })).toBe(0);
     expect(readRecordEnv("MISSING", {})).toBeUndefined();
-    expect(readRecordEnv("NULL", { NULL: null })).toBeUndefined();
+    expect(readRecordEnv("NULL", { NULL: null })).toBeNull();
   });
 
   it("ignores inherited properties", () => {

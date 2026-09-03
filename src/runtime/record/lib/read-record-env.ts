@@ -5,11 +5,5 @@ export const readRecordEnv = (env: string, record: EnvRecord) => {
     return undefined;
   }
 
-  const value = (record as Record<string, unknown>)[env];
-
-  if (typeof value === "string") {
-    return value;
-  }
-
-  return value ?? undefined;
+  return (record as Record<string, unknown>)[env];
 };
