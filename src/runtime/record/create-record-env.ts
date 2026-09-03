@@ -38,7 +38,7 @@ import { readRecordEnv } from "./lib/read-record-env.js";
  *   `undefined` for unavailable values instead of throwing, such as during CI or
  *   build steps where runtime env vars are not present.
  * @returns A strongly typed object inferred from `envKeys`.
- * @throws When a configured value is missing or fails validation, unless
+ * @throws When a configured value does not satisfy its schema, unless
  *   `options.skipValidation` is enabled.
  */
 export function createRecordEnv<
@@ -58,11 +58,7 @@ export function createRecordEnv<
         return Effect.succeed([key, undefined] as const);
       }
 
-      return envReadValueEffect(
-        key,
-        (env) => readRecordEnv(env, record),
-        options
-      ).pipe(
+      return envReadValueEffect(key, (env) => readRecordEnv(env, record)).pipe(
         Effect.flatMap((value) =>
           envParseValueEffect(key, schema, value, options)
         ),

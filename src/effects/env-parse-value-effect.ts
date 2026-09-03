@@ -18,8 +18,12 @@ export const envParseValueEffect = (
 
       return schema.parse(value);
     },
-    catch: (error) =>
-      new Error(`Environment variable "${key}" failed validation: ${error}`, {
-        cause: error,
-      }),
+    catch: (error) => {
+      const message =
+        value === undefined
+          ? `Environment variable "${key}" is not defined`
+          : `Environment variable "${key}" failed validation: ${error}`;
+
+      return new Error(message, { cause: error });
+    },
   });

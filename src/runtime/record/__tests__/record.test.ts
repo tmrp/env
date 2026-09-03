@@ -28,13 +28,24 @@ describe("createRecordEnv", () => {
     });
   });
 
-  it("treats nullish values as missing and surfaces validation errors", () => {
+  it("lets schemas handle missing and null values", () => {
     expect(() => createRecordEnv({ MISSING: z.string() }, {})).toThrow(
       'Environment variable "MISSING" is not defined'
     );
-    expect(() =>
-      createRecordEnv({ MISSING: z.string() }, { MISSING: null })
-    ).toThrow('Environment variable "MISSING" is not defined');
+    expect(
+      createRecordEnv(
+        {
+          NULLABLE: z.string().nullable(),
+          OPTIONAL: z.string().optional(),
+          WITH_DEFAULT: z.string().default("fallback"),
+        },
+        { NULLABLE: null }
+      )
+    ).toEqual({
+      NULLABLE: null,
+      OPTIONAL: undefined,
+      WITH_DEFAULT: "fallback",
+    });
     expect(() =>
       createRecordEnv(
         { PORT: z.coerce.number().int() },

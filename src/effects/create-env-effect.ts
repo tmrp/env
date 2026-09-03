@@ -26,7 +26,7 @@ export function createEnvEffect<
         return Effect.succeed([key, undefined] as const);
       }
 
-      return envReadValueEffect(key, runtimeEnvReadEffect, options).pipe(
+      return envReadValueEffect(key, runtimeEnvReadEffect).pipe(
         Effect.flatMap((value) =>
           envParseValueEffect(key, schema, value, options)
         ),

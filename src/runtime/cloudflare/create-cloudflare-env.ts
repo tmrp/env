@@ -32,7 +32,7 @@ import { createRecordEnv } from "../record/create-record-env.js";
  *   `undefined` for unavailable bindings instead of throwing, such as during CI
  *   or build steps where runtime env vars are not present.
  * @returns A strongly typed object inferred from `envKeys`.
- * @throws When a configured binding is missing or fails validation, unless
+ * @throws When a configured binding does not satisfy its schema, unless
  *   `options.skipValidation` is enabled.
  */
 export function createCloudflareEnv<
