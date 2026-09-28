@@ -1,5 +1,17 @@
 # @tmrp/env
 
+## 0.7.0
+
+### Minor Changes
+
+- [#104](https://github.com/tmrp/env/pull/104)
+  [`d800192`](https://github.com/tmrp/env/commit/d80019228a4cb0a66702a15b242532c7ec370e01)
+  Thanks [@tmrp](https://github.com/tmrp)! - Add opt-in `errorMode: "all"` to
+  every environment creator to report all schema validation failures together.
+  Export `EnvValidationError` and its `EnvValidationIssue` type for inspecting
+  variable names, issue codes, nested paths, and messages without attaching raw
+  input values. The default continues to stop at the first failure.
+
 ## 0.6.0
 
 ### Minor Changes
