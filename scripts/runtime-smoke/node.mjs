@@ -1,4 +1,4 @@
-import { createEnv } from "@tmrp/env";
+import { createEnv, EnvValidationError } from "@tmrp/env";
 import { createBrowserEnv } from "@tmrp/env/browser";
 import { createCloudflareEnv } from "@tmrp/env/cloudflare";
 import { createImportMetaEnv } from "@tmrp/env/import-meta";
@@ -19,6 +19,22 @@ assert.deepEqual(createNodeEnv({ RUNTIME_SMOKE_NODE: z.string().min(1) }), {
 assert.deepEqual(createEnv({ RUNTIME_SMOKE_AUTO: z.string().min(1) }), {
   RUNTIME_SMOKE_AUTO: " auto ",
 });
+
+assert.throws(
+  () =>
+    createNodeEnv(
+      { RUNTIME_SMOKE_NODE: z.number(), RUNTIME_SMOKE_AUTO: z.number() },
+      { errorMode: "all" }
+    ),
+  (error) => {
+    assert.ok(error instanceof EnvValidationError);
+    assert.deepEqual(
+      error.issues.map((issue) => issue.key),
+      ["RUNTIME_SMOKE_NODE", "RUNTIME_SMOKE_AUTO"]
+    );
+    return true;
+  }
+);
 
 assert.deepEqual(
   createRecordEnv(

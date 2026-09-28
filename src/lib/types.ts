@@ -35,6 +35,8 @@ export type Options = {
   debug?: {
     skipValidationWarning?: boolean;
   };
+  /** Collect all schema validation issues, or stop at the first (default). */
+  errorMode?: "all" | "first";
   isServer?: boolean;
   skipValidation?: boolean;
 };

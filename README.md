@@ -58,6 +58,7 @@ env.PORT; //    number  ✅ validated at startup
 - ✅ Validate environment variables with any Zod schema.
 - 🧠 Infer TypeScript types directly from your schema definitions.
 - 💥 Fail fast when required environment variables are missing.
+- 📋 Optionally report all schema validation issues together with structured errors.
 - 🏗️ Skip validation for build or CI steps where runtime env vars are
   unavailable.
 - 🌍 Support Node.js `process.env`, Deno `Deno.env.get`, Bun `Bun.env`, and
@@ -443,7 +444,8 @@ configuration.
 
 ## Error Behavior
 
-All creators run synchronously and throw on failure.
+All creators run synchronously and throw on failure. By default (or with
+`errorMode: "first"`), validation stops at the first failing variable.
 
 Missing required variable error:
 
@@ -460,6 +462,58 @@ Environment variable "PORT" failed validation: ...
 Configuration that does not satisfy its schema fails application startup.
 Missing optional or defaulted variables are valid, according to their schemas.
 When `skipValidation` is enabled, missing and invalid values do not throw.
+
+### Collecting All Validation Errors
+
+Pass `errorMode: "all"` to any creator to collect schema validation issues across
+all configured variables and throw one `EnvValidationError`:
+
+```ts
+import { EnvValidationError } from "@tmrp/env";
+import { createRecordEnv } from "@tmrp/env/record";
+import z from "zod";
+
+try {
+  createRecordEnv(
+    {
+      DATABASE_URL: z.url({ error: "Required URL" }),
+      PORT: z.coerce.number().positive({ error: "Expected a positive number" }),
+    },
+    { PORT: "-1" },
+    { errorMode: "all" }
+  );
+} catch (error) {
+  if (error instanceof EnvValidationError) {
+    console.error(error.message);
+    // Each issue has key, code, path, and message fields:
+    // error.issues[0].key === "DATABASE_URL"
+  } else {
+    throw error;
+  }
+}
+```
+
+```txt
+Invalid environment configuration:
+  DATABASE_URL — Required URL
+  PORT — Expected a positive number
+```
+
+Issues follow schema-key order and retain Zod's issue order within each variable.
+`key` is the environment variable name; `path` is the path within its value (for
+example, `["ports", 0]` for a nested record binding). The message includes this
+path as `SETTINGS.ports.0`. The `EnvValidationIssue` type is also exported from
+`@tmrp/env`.
+
+Generated issues contain only `key`, `code`, `path`, and `message`; raw input
+values and the original Zod error are not attached. Zod messages and paths are
+preserved, so avoid embedding secrets in custom error messages or object keys.
+
+Optional values, defaults, coercion, and transforms retain their normal behavior.
+Client-prefix filtering happens before reading or validating a variable, and
+`skipValidation: true` bypasses parsing and aggregation. Read failures and
+exceptions thrown by schema callbacks still stop creation immediately using the
+existing error behavior; they are not collected as validation issues.
 
 ## Example `.env`
 
@@ -481,6 +535,7 @@ Reads variables from the detected supported runtime and validates them.
 ```ts
 type Options = {
   clientPrefix?: string;
+  errorMode?: "all" | "first";
   isServer?: boolean;
   skipValidation?: boolean;
 };
@@ -566,8 +621,9 @@ runtime-specific names for clearer application code:
 | `@tmrp/env/browser`     | `createBrowserEnv(envKeys, env, options?)`              |
 | `@tmrp/env/import-meta` | `createImportMetaEnv(envKeys, importMetaEnv, options?)` |
 
-All creators accept the same `Options` object. Set `skipValidation: true` to
-return raw values and `undefined` for unavailable variables instead of throwing.
+All creators accept the same `Options` object. Set `errorMode: "all"` to collect
+schema validation issues in an `EnvValidationError`. Set `skipValidation: true`
+to return raw values and `undefined` for unavailable variables instead of throwing.
 
 ## Development
 
