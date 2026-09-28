@@ -1,6 +1,7 @@
 import { describe, expectTypeOf, it } from "vitest";
 import z from "zod";
 
+import type { EnvValidationError, EnvValidationIssue } from "../../index.js";
 import type { Options } from "../types.js";
 
 import { createEnv } from "../../create-env.js";
@@ -12,6 +13,12 @@ describe("creator return types", () => {
     PUBLIC_URL: z.url(),
     SECRET: z.string(),
   };
+
+  it("exports the structured validation issue type", () => {
+    expectTypeOf<EnvValidationError["issues"]>().toEqualTypeOf<
+      readonly EnvValidationIssue[]
+    >();
+  });
 
   it("returns parsed schema outputs when validation is guaranteed", () => {
     const create = () => createRecordEnv(schemas, {});
@@ -30,6 +37,34 @@ describe("creator return types", () => {
       PORT: number;
       PUBLIC_URL: string;
       SECRET: string;
+    }>();
+  });
+
+  it("preserves inferred outputs and filtering when collecting all errors", () => {
+    const create = () => createRecordEnv(schemas, {}, { errorMode: "all" });
+    const createOnClient = () =>
+      createEnv(schemas, {
+        clientPrefix: "PUBLIC_",
+        errorMode: "all",
+        isServer: false,
+      });
+    const createSkipped = () =>
+      createRecordEnv(schemas, {}, { errorMode: "all", skipValidation: true });
+
+    expectTypeOf(create).returns.toEqualTypeOf<{
+      PORT: number;
+      PUBLIC_URL: string;
+      SECRET: string;
+    }>();
+    expectTypeOf(createOnClient).returns.toEqualTypeOf<{
+      PORT: undefined;
+      PUBLIC_URL: string;
+      SECRET: undefined;
+    }>();
+    expectTypeOf(createSkipped).returns.toEqualTypeOf<{
+      PORT: unknown;
+      PUBLIC_URL: unknown;
+      SECRET: unknown;
     }>();
   });
 

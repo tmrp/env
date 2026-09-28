@@ -4,6 +4,8 @@ import { Effect } from "effect";
 
 import type { Options } from "../lib/types.js";
 
+import { EnvValidationError } from "../lib/env-validation-error.js";
+
 export const envParseValueEffect = (
   key: string,
   schema: ZodType,
@@ -13,10 +15,14 @@ export const envParseValueEffect = (
   Effect.try({
     try: () => {
       if (options?.skipValidation) {
-        return value;
+        return { success: true, data: value } as const;
       }
 
-      return schema.parse(value);
+      if (options?.errorMode === "all") {
+        return schema.safeParse(value);
+      }
+
+      return { success: true, data: schema.parse(value) } as const;
     },
     catch: (error) => {
       const message =
@@ -26,4 +32,19 @@ export const envParseValueEffect = (
 
       return new Error(message, { cause: error });
     },
-  });
+  }).pipe(
+    Effect.flatMap((result) =>
+      result.success
+        ? Effect.succeed(result.data)
+        : Effect.fail(
+            new EnvValidationError(
+              result.error.issues.map(({ code, message, path }) => ({
+                key,
+                code,
+                path,
+                message,
+              }))
+            )
+          )
+    )
+  );

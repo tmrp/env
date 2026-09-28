@@ -1,14 +1,6 @@
-import { Effect } from "effect";
+import type { EnvKeys, EnvRecord, Options } from "../../lib/types.js";
 
-import type {
-  EnvForOptions,
-  EnvKeys,
-  EnvRecord,
-  Options,
-} from "../../lib/types.js";
-
-import { envParseValueEffect } from "../../effects/env-parse-value-effect.js";
-import { envReadValueEffect } from "../../effects/env-read-value-effect.js";
+import { createEnvEffect } from "../../effects/create-env-effect.js";
 import { readRecordEnv } from "./lib/read-record-env.js";
 
 /**
@@ -45,27 +37,5 @@ export function createRecordEnv<
   const TEnvKeys extends EnvKeys,
   const TOptions extends Options | undefined = undefined,
 >(envKeys: TEnvKeys, record: EnvRecord, options?: TOptions) {
-  const isServer = options?.isServer ?? !("window" in globalThis);
-  const clientPrefix = options?.clientPrefix;
-
-  const env = Effect.runSync(
-    Effect.forEach(Object.entries(envKeys), ([key, schema]) => {
-      if (
-        !isServer &&
-        clientPrefix !== undefined &&
-        !key.startsWith(clientPrefix)
-      ) {
-        return Effect.succeed([key, undefined] as const);
-      }
-
-      return envReadValueEffect(key, (env) => readRecordEnv(env, record)).pipe(
-        Effect.flatMap((value) =>
-          envParseValueEffect(key, schema, value, options)
-        ),
-        Effect.map((value) => [key, value] as const)
-      );
-    }).pipe(Effect.map((entries) => Object.fromEntries(entries)))
-  );
-
-  return env as EnvForOptions<TEnvKeys, TOptions>;
+  return createEnvEffect(envKeys, (key) => readRecordEnv(key, record), options);
 }
