@@ -1,5 +1,14 @@
 # @tmrp/env
 
+## 0.7.1
+
+### Patch Changes
+
+- [#103](https://github.com/tmrp/env/pull/103)
+  [`deb3fb7`](https://github.com/tmrp/env/commit/deb3fb7860a4c3f7bc55af8b19bbac35866ab7bf)
+  Thanks [@dependabot](https://github.com/apps/dependabot)! - Update
+  dependencies
+
 ## 0.7.0
 
 ### Minor Changes
