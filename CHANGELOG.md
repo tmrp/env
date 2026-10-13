@@ -1,5 +1,14 @@
 # @tmrp/env
 
+## 0.7.2
+
+### Patch Changes
+
+- [#113](https://github.com/tmrp/env/pull/113)
+  [`8c0feed`](https://github.com/tmrp/env/commit/8c0feeda940da25bc93ccabc7816d78ba525c9d3)
+  Thanks [@tmrp](https://github.com/tmrp)! - Add security-gated Dependabot
+  changesets, dependency update merging, and automated dependency-only releases.
+
 ## 0.7.1
 
 ### Patch Changes
