@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
@@ -13,5 +13,7 @@ export default defineConfig({
         statements: 100,
       },
     },
+    // GitHub automation scripts use node:test and run separately in CI.
+    exclude: [...configDefaults.exclude, ".github/**"],
   },
 });

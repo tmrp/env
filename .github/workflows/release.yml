@@ -21,28 +21,40 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
+      - name: Create scoped release PR token
+        if: vars.DEPENDABOT_AUTOMATION_APP_ID != ''
+        id: app
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        with:
+          app-id: ${{ vars.DEPENDABOT_AUTOMATION_APP_ID }}
+          private-key: ${{ secrets.DEPENDABOT_AUTOMATION_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 0
+          # Later git pushes (the release sync step's tag push) use the App credential too.
+          token: ${{ steps.app.outputs.token || secrets.GITHUB_TOKEN }}
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
         with:
           version: 10
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           cache: pnpm
           node-version-file: .nvmrc
           registry-url: https://registry.npmjs.org
 
       - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
 
       - name: Setup Deno
-        uses: denoland/setup-deno@v2
+        uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -68,17 +80,87 @@ jobs:
       # On push to main, this either opens/updates a "Version Packages" PR
       # (when changesets are pending) or publishes to npm (once that PR is
       # merged and the changesets are consumed).
+      # changesets/action v2 is required for @changesets/cli v3: v1 detects
+      # publishes by parsing CLI v2 log output, so with CLI v3 it silently
+      # skipped pushing tags and creating GitHub releases.
       - name: Create Release PR or Publish
-        uses: changesets/action@v1
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
-          version: pnpm run version:packages
-          publish: pnpm release
-          commit: "chore(release): version packages"
-          title: "chore(release): version packages"
+          version-script: pnpm run version:packages
+          publish-script: pnpm release
+          commit-message: "chore(release): version packages"
+          pr-title: "chore(release): version packages"
+          # App-created release PRs trigger CI; GITHUB_TOKEN-created PRs do not.
+          # v2 only accepts the token through this input, not the GITHUB_TOKEN env var.
+          github-token: ${{ steps.app.outputs.token || secrets.GITHUB_TOKEN }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
           # Fallback for classic token auth — only needed if OIDC trusted
           # publishing is NOT configured for @tmrp/env on npmjs.com, or the
           # runner's npm is < 11.5.1. Add NPM_TOKEN as a repo secret to use it.
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Changesets can publish successfully while its locally created tag never
+      # reaches GitHub. Reconcile the tag and release on every successful run.
+      # Only operate on versions already present on npm, and never retarget a tag.
+      - name: Synchronize published GitHub release
+        if: ${{ success() }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./package.json').version")
+          tag="v${version}"
+          # A just-published version can take a few minutes to show up in the
+          # registry, so retry instead of skipping (which left releases missing).
+          max_attempts=10
+          for attempt in $(seq 1 "${max_attempts}"); do
+            published=$(npm view "@tmrp/env@${version}" version --json --prefer-online 2>/dev/null || true)
+            if [[ "${published//\"/}" == "${version}" ]]; then
+              break
+            fi
+            if (( attempt == max_attempts )); then
+              echo "::error::Version ${version} is still not visible on npm; GitHub release ${tag} was not created."
+              exit 1
+            fi
+            echo "Version ${version} is not visible on npm yet (attempt ${attempt}/${max_attempts}); retrying in 30s."
+            sleep 30
+          done
+
+          git fetch origin --tags
+          if gh release view "${tag}" >/dev/null 2>&1; then
+            echo "GitHub release ${tag} already exists."
+            exit 0
+          fi
+          if git show-ref --verify --quiet "refs/tags/${tag}"; then
+            tag_sha=$(git rev-list -n 1 "${tag}")
+            tagged_version=$(git show "${tag_sha}:package.json" | node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).version")
+            if [[ "${tagged_version}" != "${version}" ]]; then
+              echo "::error::Existing tag ${tag} has package version ${tagged_version}. Refusing to retarget."
+              exit 1
+            fi
+          else
+            git tag "${tag}" HEAD
+            git push origin "refs/tags/${tag}"
+          fi
+
+          if gh release view "${tag}" >/dev/null 2>&1; then
+            echo "GitHub release ${tag} already exists."
+            exit 0
+          fi
+
+          # Use the version's existing changelog section as release notes.
+          notes="${RUNNER_TEMP}/release-notes.md"
+          node --input-type=module <<'NODE' > "${notes}"
+          import { readFileSync } from 'node:fs';
+          const version = JSON.parse(readFileSync('package.json', 'utf8')).version;
+          const changelog = readFileSync('CHANGELOG.md', 'utf8');
+          const heading = `## ${version}`;
+          const start = changelog.indexOf(heading + '\n');
+          if (start === -1) throw new Error(`Missing changelog entry for ${version}`);
+          const from = start + heading.length + 1;
+          const next = changelog.indexOf('\n## ', from);
+          process.stdout.write(changelog.slice(from, next === -1 ? undefined : next).trim() + '\n');
+          NODE
+          gh release create "${tag}" --title "${tag}" --notes-file "${notes}" --verify-tag
