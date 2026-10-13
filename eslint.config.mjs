@@ -23,4 +23,9 @@ export default defineConfig([
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
   },
   tseslint.configs.recommended,
+  {
+    // GitHub automation scripts run as CommonJS via actions/github-script.
+    files: [".github/scripts/**/*.cjs"],
+    rules: { "@typescript-eslint/no-require-imports": "off" },
+  },
 ]);

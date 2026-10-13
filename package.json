@@ -109,6 +109,7 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.62.0",
     "vitest": "^4.1.5",
+    "yaml": "^2.9.0",
     "zod": "^4.4.2"
   },
   "peerDependencies": {

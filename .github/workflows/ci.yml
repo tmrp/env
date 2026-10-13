@@ -19,6 +19,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0 # needed for `changeset status --since`
+          persist-credentials: false
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -48,6 +49,9 @@ jobs:
 
       - name: Unit Tests
         run: pnpm test
+
+      - name: Automation Policy Tests
+        run: node --test .github/scripts/*.test.cjs
 
       - name: Build Package
         run: pnpm build
