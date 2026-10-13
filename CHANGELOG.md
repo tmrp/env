@@ -1,5 +1,13 @@
 # @tmrp/env
 
+## 0.7.3
+
+### Patch Changes
+
+- [#119](https://github.com/tmrp/env/pull/119)
+  [`78b6622`](https://github.com/tmrp/env/commit/78b662277e0e67c1806ff0ed2a095f8f7c3e5ace)
+  Thanks [@tmrp](https://github.com/tmrp)! - Update node to lts
+
 ## 0.7.2
 
 ### Patch Changes
