@@ -84,6 +84,7 @@ jobs:
       # publishes by parsing CLI v2 log output, so with CLI v3 it silently
       # skipped pushing tags and creating GitHub releases.
       - name: Create Release PR or Publish
+        id: changesets
         uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
           version-script: pnpm run version:packages
@@ -103,8 +104,10 @@ jobs:
       # Changesets can publish successfully while its locally created tag never
       # reaches GitHub. Reconcile the tag and release on every successful run.
       # Only operate on versions already present on npm, and never retarget a tag.
+      # Skip runs that opened a release PR: the action leaves the working tree on
+      # the PR branch, whose package.json holds the bumped, unpublished version.
       - name: Synchronize published GitHub release
-        if: ${{ success() }}
+        if: ${{ success() && steps.changesets.outputs.has-changesets == 'false' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -112,6 +115,11 @@ jobs:
           set -euo pipefail
           version=$(node -p "require('./package.json').version")
           tag="v${version}"
+          if gh release view "${tag}" >/dev/null 2>&1; then
+            echo "GitHub release ${tag} already exists."
+            exit 0
+          fi
+
           # A just-published version can take a few minutes to show up in the
           # registry, so retry instead of skipping (which left releases missing).
           max_attempts=10
@@ -128,12 +136,11 @@ jobs:
             sleep 30
           done
 
-          git fetch origin --tags
-          if gh release view "${tag}" >/dev/null 2>&1; then
-            echo "GitHub release ${tag} already exists."
-            exit 0
-          fi
-          if git show-ref --verify --quiet "refs/tags/${tag}"; then
+          # `changeset publish` creates an annotated local tag, but changesets/action
+          # pushes a lightweight tag through the API, so the two refs differ and a
+          # plain fetch refuses to clobber the local one. Origin is the source of truth.
+          git fetch --force origin --tags
+          if git ls-remote --exit-code origin "refs/tags/${tag}" >/dev/null; then
             tag_sha=$(git rev-list -n 1 "${tag}")
             tagged_version=$(git show "${tag_sha}:package.json" | node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).version")
             if [[ "${tagged_version}" != "${version}" ]]; then
@@ -141,13 +148,9 @@ jobs:
               exit 1
             fi
           else
-            git tag "${tag}" HEAD
+            # A local-only tag from `changeset publish` never reached GitHub; replace it.
+            git tag --force "${tag}" HEAD
             git push origin "refs/tags/${tag}"
-          fi
-
-          if gh release view "${tag}" >/dev/null 2>&1; then
-            echo "GitHub release ${tag} already exists."
-            exit 0
           fi
 
           # Use the version's existing changelog section as release notes.
