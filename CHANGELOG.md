@@ -1,5 +1,14 @@
 # @tmrp/env
 
+## 0.7.5
+
+### Patch Changes
+
+- [#125](https://github.com/tmrp/env/pull/125)
+  [`fd580c8`](https://github.com/tmrp/env/commit/fd580c8509e13a237a429008305b8b937e206808)
+  Thanks [@dependabot](https://github.com/apps/dependabot)! - chore(deps-dev):
+  bump the patch-updates group across 1 directory with 5 updates
+
 ## 0.7.4
 
 ### Patch Changes
