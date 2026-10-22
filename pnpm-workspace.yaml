@@ -1,2 +1,7 @@
 allowBuilds:
   esbuild: true
+
+# Only resolve versions published at least 14 days ago (in minutes), matching
+# Dependabot's cooldown and .github/scripts/dependency-policy.cjs. pnpm ignores
+# the npm-only `min-release-age` key in .npmrc.
+minimumReleaseAge: 20160
