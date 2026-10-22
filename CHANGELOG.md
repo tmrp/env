@@ -1,5 +1,13 @@
 # @tmrp/env
 
+## 0.7.7
+
+### Patch Changes
+
+- [#132](https://github.com/tmrp/env/pull/132)
+  [`6c7412c`](https://github.com/tmrp/env/commit/6c7412cff70dbacaccf6a67c703530dde3ebf46a)
+  Thanks [@tmrp](https://github.com/tmrp)! - Update dependencies
+
 ## 0.7.6
 
 ### Patch Changes
