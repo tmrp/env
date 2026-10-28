@@ -90,7 +90,7 @@
     "release": "changeset publish"
   },
   "dependencies": {
-    "effect": "^3.21.2"
+    "effect": "^4.0.2"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^1.0.0",
