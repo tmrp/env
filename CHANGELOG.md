@@ -1,5 +1,14 @@
 # @tmrp/env
 
+## 0.7.8
+
+### Patch Changes
+
+- [#110](https://github.com/tmrp/env/pull/110)
+  [`365dadb`](https://github.com/tmrp/env/commit/365dadb866bff9ce4e9f1ca8942e77fe8fbd6b60)
+  Thanks [@dependabot](https://github.com/apps/dependabot)! - chore(deps-dev):
+  bump dotenv from 17.4.2 to 18.0.0
+
 ## 0.7.7
 
 ### Patch Changes
