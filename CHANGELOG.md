@@ -1,5 +1,16 @@
 # @tmrp/env
 
+## 0.7.9
+
+### Patch Changes
+
+- [#140](https://github.com/tmrp/env/pull/140)
+  [`ade859a`](https://github.com/tmrp/env/commit/ade859a1b61c2ed787d7ba8f5c78e58af044d42b)
+  Thanks [@tmrp](https://github.com/tmrp)! - Update npm dependencies to patch
+  known vulnerabilities in zod (GHSA-mrhx-c7xc-m3w5) and vitest
+  (GHSA-qxg6-89mg-rqv8, GHSA-xp26-3454-mjgp), and bump effect from 4.0.2 to
+  4.0.5.
+
 ## 0.7.8
 
 ### Patch Changes
